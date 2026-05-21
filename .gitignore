@@ -1,0 +1,15 @@
+# VS Code
+.vscode/
+
+# IntelliJ / WebStorm
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env 
