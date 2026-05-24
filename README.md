@@ -102,5 +102,30 @@ AI 감정 분석, 날씨 기반 추천, 음악 취향 분석 기능을 제공하
 ## Architecture
 
 <div align="center">
-  <img src="./assets/img/SystemArcitecture.png" width="900" alt="MOOD WAVE System Architecture"/>
+  <img src="./assets/img/MoodWave-Architecture.png" width="900" alt="MOOD WAVE System Architecture"/>
+</div>
+
+---
+
+## UI Design
+
+### Layout Structure
+
+MOOD WAVE는 사이드바가 상단까지 확장된 음악 웹앱 레이아웃을 사용합니다.  
+좌측에는 로고와 메뉴를 배치하고, 우측 상단에는 검색창과 프로필 영역을 배치했습니다.  
+하단에는 현재 재생 중인 음악과 컨트롤러를 포함한 고정 푸터 플레이어를 구성했습니다.
+
+<div align="center">
+  <img src="./assets/img/MoodWave-Layout.png" width="900" alt="MOOD WAVE Layout Structure"/>
+</div>
+
+<br />
+
+### Wireframe
+
+전체 와이어프레임은 Spotify 스타일의 음악 스트리밍 웹 서비스를 참고하여 구성했습니다.  
+메인 영역에는 추천 플레이리스트, 인기 음악, 음악 카드, 재생 목록 등이 배치됩니다.
+
+<div align="center">
+  <img src="./assets/img/MoodWave-Wireframe.png" width="900" alt="MOOD WAVE Wireframe"/>
 </div>
