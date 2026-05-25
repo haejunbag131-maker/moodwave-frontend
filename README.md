@@ -62,8 +62,9 @@ AI 감정 분석, 날씨 기반 추천, 음악 취향 분석 기능을 제공하
   <tr>
     <th width="120px">Frontend</th>
     <td>
+      <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white"/>
       <img src="https://img.shields.io/badge/HTML-E34F26?style=for-the-badge&logo=html5&logoColor=white"/>
-      <img src="https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css&logoColor=white"/>
+      <img src="https://img.shields.io/badge/CSS-1572B6?style=for-the-badge&logo=css3&logoColor=white"/>
       <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"/>
     </td>
   </tr>
@@ -83,8 +84,6 @@ AI 감정 분석, 날씨 기반 추천, 음악 취향 분석 기능을 제공하
     <th width="120px">API</th>
     <td>
       <img src="https://img.shields.io/badge/Spotify%20API-1DB954?style=for-the-badge&logo=spotify&logoColor=white"/>
-      <img src="https://img.shields.io/badge/YouTube%20Data%20API%20v3-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/>
-      <img src="https://img.shields.io/badge/YouTube%20IFrame%20API-FF0000?style=for-the-badge&logo=youtube&logoColor=white"/>
       <img src="https://img.shields.io/badge/OpenAI%20API-412991?style=for-the-badge&logo=openai&logoColor=white"/>
       <img src="https://img.shields.io/badge/OpenWeather%20API-EB6E4B?style=for-the-badge&logo=openweathermap&logoColor=white"/>
     </td>
