@@ -53,6 +53,8 @@ const playlists = [
 const placeholder = {
   avatar:
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Ccircle cx='17' cy='17' r='17' fill='%23999999'/%3E%3Ccircle cx='17' cy='13' r='5' fill='%23ffffff'/%3E%3Cpath d='M8 28c1.5-5 5-8 9-8s7.5 3 9 8' fill='%23ffffff'/%3E%3C/svg%3E",
+  cover56:
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Crect width='56' height='56' fill='%23999999'/%3E%3C/svg%3E",
 };
 
 const user = {
@@ -123,12 +125,34 @@ profileArrowButton.addEventListener("click", () => {
 });
 
 // =========================
+// 푸터
+// =========================
+const currentTrack = {
+  title: "Play It Safe",
+  artist: "Julia Wolf",
+  cover: placeholder.cover56,
+  currentTime: "2:39",
+  duration: "4:22",
+  progress: "49.82%",
+};
+
+function renderPlayer() {
+  document.querySelector("#currentCover").src = currentTrack.cover;
+  document.querySelector("#currentTitle").textContent = currentTrack.title;
+  document.querySelector("#currentArtist").textContent = currentTrack.artist;
+  document.querySelector("#currentTime").textContent = currentTrack.currentTime;
+  document.querySelector("#durationTime").textContent = currentTrack.duration;
+  document.querySelector("#progressBar").style.width = currentTrack.progress;
+}
+
+// =========================
 // 초기 실행 함수
 // =========================
 function init() {
   renderNav();
   renderPlaylists();
   renderUser();
+  renderPlayer();
 }
 
 init();
