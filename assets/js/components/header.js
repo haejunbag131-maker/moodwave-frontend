@@ -133,6 +133,7 @@ function logout(e) {
   const currentUrl = window.location.href;
   // 백엔드로 로그아웃 요청
   location.href = `http://127.0.0.1:8080/logout?redirect=${encodeURIComponent(currentUrl)}`;
+  alert("로그아웃 되었습니다.");
 }
 
 // =========================
