@@ -1,25 +1,11 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-body {
-  min-height: 100vh;
-  background: linear-gradient(to bottom, #575a60 15%, #121212 65%);
-}
-
 .weather-main {
   display: flex;
   flex-direction: column;
   gap: 60px;
-  padding: 48px;
+  padding: 30px clamp(20px, 3vw, 41px) 50px;
   color: white;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .section-label {
@@ -60,10 +46,11 @@ body {
   opacity: 0.8;
 }
 
-/* 투데이 플레이리스트 */
+/* 대표 플레이리스트 */
 
 .featured-card {
-  width: 1200px;
+  width: 100%;
+  max-width: 1200px;
   display: flex;
   min-height: 320px;
   border-radius: 16px;

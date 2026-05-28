@@ -1,3 +1,5 @@
+const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
+
 import { renderCommonLayout } from '../layout/commonLayout.js';
 
 // =========================
@@ -9,10 +11,7 @@ function initWeather() {
   console.log('Weather page loaded');
 }
 
-initLayout();
 initWeather();
-
-const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
 const playlistMap = {
   Rain: {
@@ -21,9 +20,9 @@ const playlistMap = {
     title: 'Overcast Vibes',
     genre: 'Lo-fi • Indie • Soft Jazz',
     desc: '차분하게 하루를 정리하고 싶을 때',
-    image: './images/rainy-2.jpg',
-    icon: './images/cloudy.svg',
-    page: './playlist-rainy.html',
+    image: '/assets/img/rainy-2.jpg',
+    icon: '/assets/icon/rainy.svg',
+    page: '/pages/playlist-rainy.html',
   },
 
   Clouds: {
@@ -32,9 +31,9 @@ const playlistMap = {
     title: 'Cloudy Skies',
     genre: 'Dream Pop • Indie • Chill',
     desc: '흐린 하늘 아래 생각에 잠기고 싶은 순간',
-    image: './images/cloudy-1.png',
-    icon: './images/cloudy.svg',
-    page: './playlist-cloudy.html',
+    image: '/assets/img/cloudy-1.png',
+    icon: '/assets/icon/cloudy.svg',
+    page: '/pages/playlist.html',
   },
 
   Clear: {
@@ -43,9 +42,9 @@ const playlistMap = {
     title: 'Golden Hour',
     genre: 'Pop • Funk • Chill Pop',
     desc: '햇살 가득한 오후를 더 밝게 만들 음악',
-    image: './images/sunny-2.jpg',
-    icon: './images/cloudy.svg',
-    page: './playlist-sunny.html',
+    image: '/assets/img/sunny-2.jpg',
+    icon: '/assets/icon/sunny.svg',
+    page: '/pages/playlist-sunny.html',
   },
 
   Snow: {
@@ -54,9 +53,9 @@ const playlistMap = {
     title: 'Winter Hush',
     genre: 'Piano • Ambient • Jazz',
     desc: '포근한 겨울 감성에 어울리는 플레이리스트',
-    image: './images/snowy.jpg',
-    icon: './images/cloudy.svg',
-    page: './playlist-sunny.html',
+    image: '/assets/img/snowy.jpg',
+    icon: '/assets/icon/snowy.svg',
+    page: '/pages/playlist-sunny.html',
   },
 
   Thunderstorm: {
@@ -65,29 +64,20 @@ const playlistMap = {
     title: 'Thunder Echoes',
     genre: 'Electronic • Alt Rock • Synthwave',
     desc: '거센 빗소리 속 몰입하고 싶은 밤',
-    image: './images/stormy.jpg',
-    icon: './images/cloudy.svg',
-    page: './playlist-stormy.html',
+    image: '/assets/img/stormy.jpg',
+    icon: '/assets/icon/stormy.svg',
+    page: '/pages/playlist-stormy.html',
   },
 
-  Mist: {
+  Foggy: {
+    weather: 'Foggy',
     tag: 'FOR FOGGY DAYS',
     title: 'Midnight Mist',
     genre: 'Ambient • Lo-fi • Dream Pop',
     desc: '몽환적인 새벽 공기와 어울리는 사운드',
-    image: './images/foggy.jpg',
-    icon: './images/cloudy.svg',
-    page: './playlist-foggy.html',
-  },
-
-  Fog: {
-    tag: 'FOR FOGGY DAYS',
-    title: 'Midnight Mist',
-    genre: 'Ambient • Lo-fi • Dream Pop',
-    desc: '몽환적인 새벽 공기와 어울리는 사운드',
-    image: './images/foggy.jpg',
-    icon: './images/cloudy.svg',
-    page: './playlist-foggy.html',
+    image: '/assets/img/foggy.jpg',
+    icon: '/assets/icon/foggy.svg',
+    page: '/pages/playlist-foggy.html',
   },
 };
 
@@ -114,13 +104,23 @@ navigator.geolocation.getCurrentPosition(
   },
 );
 
+// 날씨 정규화
+function normalizeWeather(weather) {
+  if (weather === 'Mist' || weather === 'Fog') {
+    return 'Foggy';
+  }
+
+  return weather;
+}
+
 function getWeather(lat, lon) {
   const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric`;
 
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
-      const weather = data.weather[0].main;
+      const weather = normalizeWeather(data.weather[0].main);
+      const currentWeather = weather;
       const temp = Math.round(data.main.temp);
       const city = data.name;
 
@@ -138,31 +138,13 @@ function getWeather(lat, lon) {
 }
 
 function updateWeather(weather) {
-  if (weather === 'Rain') {
-    weatherTitle.textContent = 'Rainy';
-    weatherDesc.textContent = '조용히 하루를 마무리하기 좋은 날씨';
-    weatherIcon.src = '../images/rainy.svg';
-  } else if (weather === 'Clouds') {
-    weatherTitle.textContent = 'Cloudy';
-    weatherDesc.textContent = '흐린 하늘 아래 차분한 분위기';
-    weatherIcon.src = '../images/cloudy.svg';
-  } else if (weather === 'Clear') {
-    weatherTitle.textContent = 'Sunny';
-    weatherDesc.textContent = '햇살 가득한 오후의 에너지';
-    weatherIcon.src = '../images/sunny.svg';
-  } else if (weather === 'Snow') {
-    weatherTitle.textContent = 'Snowy';
-    weatherDesc.textContent = '차가운 공기 속 포근한 분위기';
-    weatherIcon.src = '../images/snowy.svg';
-  } else if (weather === 'Mist' || weather === 'Fog') {
-    weatherTitle.textContent = 'Foggy';
-    weatherDesc.textContent = '안개 낀 새벽 같은 몽환적인 분위기';
-    weatherIcon.src = '../images/foggy.svg';
-  } else if (weather === 'Thunderstorm') {
-    weatherTitle.textContent = 'Stormy';
-    weatherDesc.textContent = '거센 빗소리 속 몰입하고 싶은 밤';
-    weatherIcon.src = '../images/stormy.svg';
-  }
+  const playlist = playlistMap[weather];
+
+  if (!playlist) return;
+
+  weatherTitle.textContent = playlist.weather;
+  weatherDesc.textContent = playlist.desc;
+  weatherIcon.src = playlist.icon;
 }
 
 function updatePlaylist(weather) {
@@ -178,23 +160,23 @@ function updatePlaylist(weather) {
   featuredCard.href = playlist.page;
 }
 
-function renderWeatherCards() {
+function renderWeatherCards(currentWeather) {
   weatherCardGrid.innerHTML = '';
 
   Object.entries(playlistMap).forEach(([weather, playlist]) => {
+    if (weather === currentWeather) return;
+
     const card = document.createElement('a');
     card.className = 'weather-card';
     card.innerHTML = `
-  
-    <img class="other-weather-img" src="${playlist.image}" alt="${playlist.title}"/>
-    
+  <img class="other-weather-img" src="${playlist.image}" alt="${playlist.title}"/>
   <div class="weather-card-content">
     <img class="weather-card-icon" src="${playlist.icon}" alt=""/>
     <h3>${playlist.weather}</h3>
     <span>${playlist.genre}</span>
     <p>${playlist.title}</p>
   </div>
-  <img class="btn-other-weather" src="../images/weather-play.svg" alt="" />
+  <img class="btn-other-weather" src="/assets/icon/weather-play.svg" alt="" />
 `;
 
     weatherCardGrid.append(card);
