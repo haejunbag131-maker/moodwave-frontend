@@ -1,0 +1,6 @@
+.playlist-header,
+.track-row {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px 80px;
+  align-items: center;
+}

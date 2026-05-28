@@ -16,30 +16,30 @@
 
 /* 현재 날씨 인포 */
 
-.weather-content-title {
+.weather-heading {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-.weather-content-title .weather-icon {
+.weather-heading .weather-icon {
   width: 60px;
   height: 60px;
 }
 
-.weather-content-title .weather-title {
+.weather-heading .weather-title {
   font-size: 56px;
   font-weight: 700;
   line-height: 1;
 }
 
-.weather-content .weather-info {
+.weather-hero-content .weather-info {
   margin-top: 20px;
   font-size: 24px;
   font-weight: 400;
 }
 
-.weather-content .weather-desc {
+.weather-hero-content .weather-desc {
   display: inline-block;
   margin-top: 8px;
   font-size: 16px;
@@ -89,7 +89,7 @@
   transform: translateY(0);
 }
 
-.playlist-info {
+.featured-playlist-info {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -103,17 +103,17 @@
   opacity: 0.8;
 }
 
-.playlist-info .playlist-title {
+.featured-playlist-info .playlist-title {
   font-size: 52px;
   font-weight: 700;
 }
 
-.playlist-info .playlist-genre {
+.featured-playlist-info .playlist-genre {
   margin-top: 16px;
   font-size: 16px;
 }
 
-.playlist-info .playlist-desc {
+.featured-playlist-info .playlist-desc {
   margin-top: 8px;
   font-size: 16px;
 }
