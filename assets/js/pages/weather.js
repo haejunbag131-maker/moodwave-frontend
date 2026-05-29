@@ -1,6 +1,9 @@
-const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
-
 import { renderCommonLayout } from '../layout/commonLayout.js';
+// import axios from 'axois';
+
+const BASE_URL = '';
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
 // =========================
 // 초기 실행
