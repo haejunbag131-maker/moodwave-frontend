@@ -24,7 +24,7 @@ export function renderHome() {
 
     <section class="section">
       <div class="section__header">
-        <h2 class="section__title">Popular K-Pop</h2>
+        <h2 class="section__title">Popular</h2>
         <a href="popular.html" class="section__see-all">SEE ALL</a>
       </div>
 

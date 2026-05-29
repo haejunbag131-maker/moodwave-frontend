@@ -217,6 +217,8 @@ function initSearchForm() {
 
   if (!searchForm || !searchInput) return;
 
+  let searchTimer = null;
+
   searchForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
@@ -224,7 +226,20 @@ function initSearchForm() {
 
     if (!keyword) return;
 
+    clearTimeout(searchTimer);
     location.hash = `#/search?q=${encodeURIComponent(keyword)}`;
+  });
+
+  searchInput.addEventListener("input", (event) => {
+    const keyword = event.target.value.trim();
+
+    clearTimeout(searchTimer);
+
+    searchTimer = setTimeout(() => {
+      if (!keyword) return;
+
+      location.hash = `#/search?q=${encodeURIComponent(keyword)}`;
+    }, 700);
   });
 }
 
