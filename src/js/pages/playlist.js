@@ -9,17 +9,6 @@ const params = new URLSearchParams(window.location.search);
 const playlistType = params.get('playlist');
 
 // =========================
-// 초기 실행
-// =========================
-renderCommonLayout();
-
-function initWeatherPlaylist() {
-  console.log('Weather Playlist page loaded');
-}
-
-initWeatherPlaylist();
-
-// =========================
 // 현재 hash에서 플레이리스트 이름 가져오기
 // =========================
 function getPlaylistNameFromHash() {
@@ -310,3 +299,14 @@ export function initPlaylistPage() {
   renderPlaylistDetail(playlistName);
   bindPlaylistTrackRemoveEvents();
 }
+
+// =========================
+// 날씨 플레이리스트 초기 실행
+// =========================
+renderCommonLayout();
+
+function initWeatherPlaylist() {
+  console.log('Weather Playlist page loaded');
+}
+
+initWeatherPlaylist();

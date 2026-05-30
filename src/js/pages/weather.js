@@ -24,6 +24,7 @@ const playlistMap = {
     desc: '차분하게 하루를 정리하고 싶을 때',
     image: '/assets/img/rainy-2.jpg',
     icon: '/assets/icon/rainy.svg',
+    color: 'rgba(45, 55, 80, 0.7)',
   },
 
   Clouds: {
@@ -34,6 +35,7 @@ const playlistMap = {
     desc: '흐린 하늘 아래 생각에 잠기고 싶은 순간',
     image: '/assets/img/cloudy.jpg',
     icon: '/assets/icon/cloudy.svg',
+    color: 'rgba(65, 70, 80, 0.7)',
   },
 
   Clear: {
@@ -44,6 +46,7 @@ const playlistMap = {
     desc: '햇살 가득한 오후를 더 밝게 만들 음악',
     image: '/assets/img/sunny-4.jpg',
     icon: '/assets/icon/sunny.svg',
+    color: 'rgba(75, 55, 25, 0.7)',
   },
 
   Snow: {
@@ -54,6 +57,7 @@ const playlistMap = {
     desc: '포근한 겨울 감성에 어울리는 플레이리스트',
     image: '/assets/img/snowy-3.jpg',
     icon: '/assets/icon/snowy.svg',
+    color: 'rgba(90, 105, 130, 0.7)',
   },
 
   Thunderstorm: {
@@ -64,6 +68,7 @@ const playlistMap = {
     desc: '거센 빗소리 속 몰입하고 싶은 밤',
     image: '/assets/img/stormy.jpg',
     icon: '/assets/icon/stormy.svg',
+    color: 'rgba(50, 50, 65, 0.8)',
   },
 
   Foggy: {
@@ -74,6 +79,7 @@ const playlistMap = {
     desc: '몽환적인 새벽 공기와 어울리는 사운드',
     image: '/assets/img/foggy.jpg',
     icon: '/assets/icon/foggy.svg',
+    color: 'rgba(45, 50, 65, 0.8)',
   },
 };
 
@@ -133,6 +139,7 @@ function getWeather(lat, lon) {
     });
 }
 
+// 현재 날씨 인포
 function updateWeather(weather) {
   const playlist = playlistMap[weather];
 
@@ -143,6 +150,7 @@ function updateWeather(weather) {
   weatherIcon.src = playlist.icon;
 }
 
+// 대표 플레이리스트
 function updatePlaylist(weather) {
   const playlist = playlistMap[weather];
 
@@ -154,10 +162,12 @@ function updatePlaylist(weather) {
   playlistTitle.textContent = playlist.title;
   playlistGenre.textContent = playlist.genre;
   playlistDesc.textContent = playlist.desc;
-  playlistAlbum.style.backgroundImage = `url(${playlist.image})`;
+  playlistAlbumImg.style.backgroundImage = `url(${playlist.image})`;
   featuredCard.href = `/pages/playlist.html?playlist=${weather}`;
+  featuredCard.style.setProperty('--playlist-color', playlist.color);
 }
 
+// 다른 날씨 플레이리스트
 function renderWeatherCards(currentWeather) {
   weatherCardGrid.innerHTML = '';
 

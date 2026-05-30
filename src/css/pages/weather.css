@@ -48,6 +48,7 @@
 /* 대표 플레이리스트 */
 
 .featured-card {
+  position: relative;
   width: 100%;
   max-width: 1200px;
   display: flex;
@@ -58,16 +59,46 @@
     transform 0.3s ease,
     border-color 0.3s ease;
   cursor: pointer;
-  background: linear-gradient(90deg, #282421, rgba(0, 0, 0, 0));
   backdrop-filter: blur(4px);
+  background: transparent;
+}
+
+.featured-card::before {
+  content: '';
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--playlist-color) 0%, transparent 100%);
+  transform: translateX(-20px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.featured-card:hover::before {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .playlist-album {
   width: 320px;
-  background-size: cover;
-  background-position: center;
   border-radius: 16px;
   position: relative;
+  overflow: hidden;
+}
+
+.playlist-album-bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.3s ease;
+}
+
+.featured-card:hover .playlist-album-bg {
+  transform: scale(1.1);
 }
 
 .btn-today {
@@ -75,17 +106,8 @@
   width: 60px;
   height: 60px;
   bottom: 20px;
-  right: 30px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
-}
-
-.featured-card:hover .btn-today {
-  opacity: 1;
-  transform: translateY(0);
+  right: 20px;
+  opacity: 0.9;
 }
 
 .featured-playlist-info {
@@ -93,6 +115,7 @@
   flex-direction: column;
   justify-content: center;
   padding: 48px;
+  z-index: 1;
 }
 
 .playlist-weather {
@@ -130,8 +153,6 @@
   display: none;
 }
 
-/* 다른 날씨 플레이리스트 카드 */
-
 .weather-card {
   position: relative;
   min-width: 265px;
@@ -154,6 +175,11 @@
   right: 24px;
   bottom: 24px;
   object-fit: contain;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 }
 
 .weather-card .other-weather-img {
@@ -161,7 +187,21 @@
   height: 100%;
   object-fit: cover;
   position: absolute;
-  filter: brightness(60%);
+
+  filter: brightness(40%) grayscale(100%);
+  transition:
+    filter 0.3s ease,
+    transform 0.3s ease;
+}
+
+.weather-card:hover .other-weather-img {
+  filter: grayscale(0%);
+  transform: scale(1.1);
+}
+
+.weather-card:hover .btn-other-weather {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .weather-card-icon {
@@ -181,7 +221,7 @@
 }
 
 .weather-card-content h3 {
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 700;
 }
 
