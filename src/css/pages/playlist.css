@@ -362,3 +362,61 @@
     height: 20px;
   }
 }
+
+@media (max-width: 1024px) {
+  .playlist-info .playlist-title {
+    font-size: 60px;
+  }
+
+  .playlist-content-container {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .playlist-main {
+    padding: 20px;
+  }
+
+  .playlist-hero-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .playlist-cover {
+    width: 220px;
+    height: 220px;
+  }
+
+  .playlist-info {
+    padding: 0;
+    text-align: center;
+    align-items: center;
+  }
+
+  .playlist-info .playlist-title {
+    font-size: 48px;
+  }
+
+  .playlist-actions {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .playlist-header,
+  .track-row {
+    grid-template-columns: 40px 1fr 80px;
+    padding: 12px;
+  }
+
+  /* 좋아요 버튼 숨김 */
+  .playlist-header span:nth-child(3),
+  .track-row .liked-btn {
+    display: none;
+  }
+
+  .track-info .track-text {
+    padding-left: 12px;
+  }
+}

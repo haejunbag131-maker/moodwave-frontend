@@ -70,10 +70,13 @@ export const playlistMap = {
   Rain: {
     weather: 'Rainy',
     title: 'Overcast Vibes',
-    description: '비 오는 창가와 잘 어울리는 잔잔한 감성 플레이리스트',
-    image: '/assets/img/rainy-2.jpg',
+    desc: '차분하게 하루를 정리하고 싶을 때',
+    image: '/assets/img/rainy(1).jpg',
     genre: 'Lo-fi • Jazz • Acoustic',
+    tag: 'FOR RAINY DAYS',
     label: 'RAINY PLAYLIST',
+    icon: '/assets/icon/rainy.svg',
+    color: 'rgba(45, 55, 80, 0.7)',
   },
 
   Clouds: {
@@ -82,7 +85,10 @@ export const playlistMap = {
     description: '흐린 오후를 천천히 채워주는 부드러운 사운드',
     image: '/assets/img/cloudy.jpg',
     genre: 'Dream Pop • Indie • Shoegaze',
+    tag: 'FOR CLOUDY DAYS',
     label: 'CLOUDY PLAYLIST',
+    icon: '/assets/icon/cloudy.svg',
+    color: 'rgba(65, 70, 80, 0.7)',
   },
 
   Clear: {
@@ -91,7 +97,10 @@ export const playlistMap = {
     description: '햇살 가득한 하루를 더 밝게 만드는 플레이리스트',
     image: '/assets/img/sunny-4.jpg',
     genre: 'Pop • Funk • Disco',
+    tag: 'FOR SUNNY DAYS',
     label: 'SUNNY PLAYLIST',
+    icon: '/assets/icon/sunny.svg',
+    color: 'rgba(75, 55, 25, 0.7)',
   },
 
   Snow: {
@@ -100,7 +109,10 @@ export const playlistMap = {
     description: '포근한 겨울 풍경과 어울리는 따뜻한 선율',
     image: '/assets/img/snowy-3.jpg',
     genre: 'Piano • Ambient • Jazz',
+    tag: 'FOR SNOWY DAYS',
     label: 'SNOWY PLAYLIST',
+    icon: '/assets/icon/snowy.svg',
+    color: 'rgba(90, 105, 130, 0.7)',
   },
 
   Thunderstorm: {
@@ -109,7 +121,10 @@ export const playlistMap = {
     description: '천둥소리와 함께 몰입하기 좋은 강렬한 사운드',
     image: '/assets/img/stormy.jpg',
     genre: 'Electronic • Alt Rock • Synthwave',
+    tag: 'FOR STORMY DAYS',
     label: 'STORMY PLAYLIST',
+    icon: '/assets/icon/stormy.svg',
+    color: 'rgba(50, 50, 65, 0.8)',
   },
 
   Foggy: {
@@ -118,7 +133,10 @@ export const playlistMap = {
     description: '안개 낀 새벽의 몽환적인 분위기를 담은 플레이리스트',
     image: '/assets/img/foggy.jpg',
     genre: 'Ambient • Downtempo • Dream Pop',
+    tag: 'FOR FOGGY DAYS',
     label: 'FOGGY PLAYLIST',
+    icon: '/assets/icon/foggy.svg',
+    color: 'rgba(45, 50, 65, 0.8)',
   },
 };
 

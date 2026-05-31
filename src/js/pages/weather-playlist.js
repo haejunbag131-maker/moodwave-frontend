@@ -1,6 +1,5 @@
 import { renderCommonLayout } from '../layout/commonLayout.js';
 
-// import { searchTrack } from '../pages/spotify.js';
 import { playlistMap, weatherTracks } from '../data.js';
 
 const params = new URLSearchParams(window.location.search);

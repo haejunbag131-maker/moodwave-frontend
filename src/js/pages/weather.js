@@ -1,4 +1,5 @@
 import { renderCommonLayout } from '../layout/commonLayout.js';
+import { playlistMap } from '../data.js';
 
 const BASE_URL = '';
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -14,74 +15,6 @@ function initWeather() {
 }
 
 initWeather();
-
-const playlistMap = {
-  Rain: {
-    weather: 'Rainy',
-    tag: 'FOR RAINY DAYS',
-    title: 'Overcast Vibes',
-    genre: 'Lo-fi • Jazz • Acoustic',
-    desc: '차분하게 하루를 정리하고 싶을 때',
-    image: '/assets/img/rainy(1).jpg',
-    icon: '/assets/icon/rainy.svg',
-    color: 'rgba(45, 55, 80, 0.7)',
-  },
-
-  Clouds: {
-    weather: 'Cloudy',
-    tag: 'FOR CLOUDY DAYS',
-    title: 'Cloudy Skies',
-    genre: 'Dream Pop • Indie • Shoegaze',
-    desc: '흐린 하늘 아래 생각에 잠기고 싶은 순간',
-    image: '/assets/img/cloudy.jpg',
-    icon: '/assets/icon/cloudy.svg',
-    color: 'rgba(65, 70, 80, 0.7)',
-  },
-
-  Clear: {
-    weather: 'Sunny',
-    tag: 'FOR SUNNY DAYS',
-    title: 'Golden Hour',
-    genre: 'Pop • Funk • Disco',
-    desc: '햇살 가득한 오후를 더 밝게 만들 음악',
-    image: '/assets/img/sunny.jpg',
-    icon: '/assets/icon/sunny.svg',
-    color: 'rgba(75, 55, 25, 0.7)',
-  },
-
-  Snow: {
-    weather: 'Snowy',
-    tag: 'FOR SNOWY DAYS',
-    title: 'Winter Hush',
-    genre: 'Piano • Ambient • Jazz',
-    desc: '포근한 겨울 감성에 어울리는 플레이리스트',
-    image: '/assets/img/snowy.jpg',
-    icon: '/assets/icon/snowy.svg',
-    color: 'rgba(90, 105, 130, 0.7)',
-  },
-
-  Thunderstorm: {
-    weather: 'Stormy',
-    tag: 'FOR STORMY DAYS',
-    title: 'Thunder Echoes',
-    genre: 'Electronic • Alt Rock • Synthwave',
-    desc: '거센 빗소리 속 몰입하고 싶은 밤',
-    image: '/assets/img/stormy.jpg',
-    icon: '/assets/icon/stormy.svg',
-    color: 'rgba(50, 50, 65, 0.8)',
-  },
-
-  Foggy: {
-    weather: 'Foggy',
-    tag: 'FOR FOGGY DAYS',
-    title: 'Midnight Mist',
-    genre: 'Ambient • Downtempo • Dream Pop',
-    desc: '몽환적인 새벽 공기와 어울리는 사운드',
-    image: '/assets/img/foggy.jpg',
-    icon: '/assets/icon/foggy.svg',
-    color: 'rgba(45, 50, 65, 0.8)',
-  },
-};
 
 const weatherCardGrid = document.querySelector('.weather-card-grid');
 const weatherIcon = document.querySelector('.weather-icon');
