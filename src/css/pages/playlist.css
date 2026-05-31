@@ -134,6 +134,32 @@
   color: white;
 }
 
+.track-row .liked-btn {
+  width: 40px;
+  height: 40px;
+}
+
+.track-row-num {
+  width: 24px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.track-row-play {
+  display: none;
+  width: 16px;
+}
+
+.track-row:hover .track-number {
+  display: none;
+}
+
+.track-row:hover .track-row-play {
+  display: block;
+}
+
 /* =========================
    Playlist 페이지
 ========================= */

@@ -192,3 +192,33 @@ function renderWeatherCards(currentWeather) {
     weatherCardGrid.append(card);
   });
 }
+
+// 마우스 드래그
+let isDown = false;
+let startX;
+let scrollLeft;
+
+weatherCardGrid.addEventListener('mousedown', (e) => {
+  isDown = true;
+  startX = e.pageX - weatherCardGrid.offsetLeft;
+  scrollLeft = weatherCardGrid.scrollLeft;
+});
+
+weatherCardGrid.addEventListener('mouseleave', () => {
+  isDown = false;
+});
+
+weatherCardGrid.addEventListener('mouseup', () => {
+  isDown = false;
+});
+
+weatherCardGrid.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+
+  e.preventDefault();
+
+  const x = e.pageX - weatherCardGrid.offsetLeft;
+  const walk = (x - startX) * 2;
+
+  weatherCardGrid.scrollLeft = scrollLeft - walk;
+});
