@@ -44,7 +44,6 @@ let currentDuration = 0;
 let currentPosition = 0;
 let lastProgressUpdatedAt = 0;
 let progressTimer = null;
-
 // =========================
 // Spotify Access Token 가져오기
 // =========================
@@ -1218,7 +1217,7 @@ export function renderFooter() {
         aria-label="좋아요"
       >
         <img
-          src="/assets/icon/Heart_Fill_XS.svg"
+          src="/assets/icon/Heart_XS.svg"
           width="28"
           height="28"
           alt=""

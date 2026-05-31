@@ -105,7 +105,6 @@ function createLikedTrackRow(track, index) {
           class="playlist-track-remove-button"
           data-no-play
           data-track-id="${track.id}"
-          onclick="removeLike('${track.id}')"
           aria-label="좋아요 삭제"
           title="삭제"
         >
@@ -187,8 +186,9 @@ async function removeLike(musicId) {
     body: JSON.stringify({ musicId: musicId }),
     credentials: "include",
   });
-  renderLikedPage(); // 목록 갱신
 }
+
+window.removeLike = removeLike;
 
 // =========================
 // 초기 실행 함수
@@ -213,6 +213,21 @@ function init() {
   // 현재 페이지 렌더링
   router();
   renderLikedPage();
+  const container = document.querySelector("#list-container");
+  if (container) {
+    container.addEventListener("click", async (e) => {
+      // 클릭된 요소가 삭제 버튼이거나 삭제 버튼의 자식(이미지 등)인지 확인
+      const removeBtn = e.target.closest(".playlist-track-remove-button");
+      if (removeBtn) {
+        e.stopPropagation(); // 다른 플레이어 이벤트 방해 금지
+        const musicId = removeBtn.dataset.trackId;
+        if (musicId) {
+          await removeLike(musicId);
+        }
+        renderLikedPage();
+      }
+    });
+  }
 
   // hash 변경 시 메인 영역만 변경
   window.addEventListener("hashchange", router);
