@@ -1,6 +1,10 @@
 import { renderSidebar, initSidebar } from "../components/sidebar.js";
 import { renderHeader, initHeader } from "../components/header.js";
-import { renderFooter, initFooter } from "../components/footer.js";
+import {
+  renderFooter,
+  initFooter,
+  getSpotifyAccessToken,
+} from "../components/footer.js";
 
 import { renderHome, initHome } from "./home.js";
 import { renderSearch, initSearch } from "./search.js";
@@ -10,6 +14,8 @@ import { renderPopularPage, initPopularPage } from "./popular.js";
 
 import { isLoggedIn } from "../utils/auth.js";
 import { initToast } from "../utils/toast.js";
+
+const API_BASE_URL = "http://127.0.0.1:8080";
 
 // =========================
 // 로그인이 필요한 페이지 목록
@@ -43,6 +49,146 @@ async function router() {
     }
   }
 }
+function formatDuration(ms) {
+  if (!ms) return "-";
+
+  const min = Math.floor(ms / 60000);
+  const sec = Math.floor((ms % 60000) / 1000);
+
+  return `${min}:${sec.toString().padStart(2, "0")}`;
+}
+function createLikedTrackRow(track, index) {
+  const rowNumber = index + 1;
+
+  return `
+    <tr
+      class="song-row"
+      data-play-track
+      data-id="${track.id}"
+      data-uri="${track.uri || ""}"
+      data-title="${track.name}"
+      data-artist="${track.artists?.[0]?.name || ""}"
+      data-cover="${track.album?.images?.[0]?.url || ""}"
+    >
+      <td>${rowNumber}</td>
+
+      <td>
+        <div class="song-info">
+          <img
+            class="song-info__cover"
+            src="${track.album?.images?.[0]?.url || ""}"
+            alt=""
+          />
+
+          <div class="song-info__text">
+            <span class="song-info__title">
+              ${track.name}
+            </span>
+            <span class="song-info__artist">
+              ${track.artists?.map((a) => a.name).join(", ")}
+            </span>
+          </div>
+        </div>
+      </td>
+
+      <td>
+        ${track.album?.release_date || "-"}
+      </td>
+
+      <td>
+        ${formatDuration(track.duration_ms)}
+      </td>
+
+      <td>
+        <button
+          type="button"
+          class="playlist-track-remove-button"
+          data-no-play
+          data-track-id="${track.id}"
+          onclick="removeLike('${track.id}')"
+          aria-label="좋아요 삭제"
+          title="삭제"
+        >
+         <img src="../../public/assets/icon/Heart_Fill_XS.svg" alt="like icon" />
+        </button>
+      </td>
+    </tr>
+  `;
+}
+async function renderLikedPage() {
+  const container = document.querySelector("#list-container");
+  if (!container) return;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/like`, {
+      credentials: "include",
+    });
+
+    const likedItems = await response.json();
+
+    if (!likedItems.length) {
+      container.innerHTML = "<p>좋아요한 곡이 없습니다.</p>";
+      return;
+    }
+
+    const token = await getSpotifyAccessToken();
+
+    let html = "";
+
+    for (let i = 0; i < likedItems.length; i++) {
+      const item = likedItems[i];
+      const id = item.musicId?.trim();
+
+      if (!id) continue;
+
+      const res = await fetch(`https://api.spotify.com/v1/tracks/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        console.error(await res.text());
+        continue;
+      }
+
+      const track = await res.json();
+
+      html += createLikedTrackRow(track, i);
+    }
+
+    container.innerHTML = `
+  <table class="song-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>곡 정보</th>
+        <th>발매일</th>
+        <th>재생시간</th>
+        <th><img src="../../public/assets/icon/Heart_Fill_XS.svg" alt="like icon" /></th>
+      </tr>
+    </thead>
+    <tbody>
+      ${html}
+    </tbody>
+  </table>
+`;
+  } catch (err) {
+    console.error("좋아요 목록 로딩 실패:", err);
+  }
+}
+
+// 좋아요 취소 함수
+async function removeLike(musicId) {
+  // 백엔드 toggleLike 로직을 호출하여 삭제 처리
+  await fetch(`${API_BASE_URL}/api/like`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ musicId: musicId }),
+    credentials: "include",
+  });
+  renderLikedPage(); // 목록 갱신
+}
 
 // =========================
 // 초기 실행 함수
@@ -66,6 +212,7 @@ function init() {
 
   // 현재 페이지 렌더링
   router();
+  renderLikedPage();
 
   // hash 변경 시 메인 영역만 변경
   window.addEventListener("hashchange", router);
