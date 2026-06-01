@@ -58,6 +58,13 @@ export async function getSpotifyAccessToken() {
       credentials: "include",
     });
 
+    // 로그인 안 된 상태는 에러가 아니라 null 처리
+    if (response.status === 401) {
+      console.warn("Spotify 로그인이 필요합니다.");
+      spotifyAccessToken = null;
+      return null;
+    }
+
     if (!response.ok) {
       throw new Error("Spotify access token 요청 실패");
     }
@@ -67,11 +74,15 @@ export async function getSpotifyAccessToken() {
     spotifyAccessToken = data.accessToken;
 
     console.log("Spotify access token 받아오기 성공");
-    console.log("토큰 길이:", spotifyAccessToken.length);
+
+    if (spotifyAccessToken) {
+      console.log("토큰 길이:", spotifyAccessToken.length);
+    }
 
     return spotifyAccessToken;
   } catch (error) {
     console.error("Spotify access token 받아오기 실패:", error);
+    spotifyAccessToken = null;
     return null;
   }
 }
