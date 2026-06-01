@@ -1,10 +1,7 @@
-import { ICON_PATH, navItems, playlistMenuItems } from "../data.js";
-import { isLoggedIn, requireLogin } from "../utils/auth.js";
-import {
-  deletePlaylistTracks,
-  renamePlaylistTracks,
-} from "../utils/playlistStorage.js";
-import { escapeHTML } from "../utils/escapeHTML.js";
+import { ICON_PATH, navItems, playlistMenuItems } from '../data.js';
+import { isLoggedIn, requireLogin } from '../utils/auth.js';
+import { deletePlaylistTracks, renamePlaylistTracks } from '../utils/playlistStorage.js';
+import { escapeHTML } from '../utils/escapeHTML.js';
 
 const PLAYLIST_STORAGE_KEY = 'moodwave_playlists';
 const PLAYLIST_MENU_WIDTH = 270;
@@ -37,16 +34,7 @@ export function renderSidebar() {
       <!-- 로고 -->
       <div class="sidebar__brand">
         <a href="#/home" class="sidebar__brand-link">
-          <svg width="30" height="27" viewBox="0 0 30 27" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M17.591 20.9294C15.2047 20.1074 12.7501 19.9809 10.5001 20.55C8.93192 20.9294 7.43192 21.6882 6.06828 22.6367L5.11371 23.3954L4.84099 23.6484L5.45462 24.1542C5.5228 24.1542 5.52281 24.2174 5.59099 24.2807C5.72736 24.4071 5.86373 24.4704 6.06828 24.5968L6.47735 24.8497L6.88645 24.5336C6.95463 24.4704 7.091 24.3439 7.22736 24.2807C8.45464 23.3322 9.81827 22.6999 11.2501 22.3837C13.091 21.9411 15.0683 22.0043 17.0456 22.6999C18.6819 23.269 22.0229 23.9645 26.0456 22.3837L26.182 22.3205L26.3865 22.1308C26.3865 22.0676 26.4547 22.0676 26.5229 22.0043C26.8638 21.625 27.2047 21.2456 27.4774 20.8029L28.8411 18.8428L26.6592 19.9809C23.4547 21.6249 20.5229 21.9411 17.591 20.9294Z" fill="currentColor"/>
-            <path d="M8.25003 14.1005C10.0909 13.6579 12.0682 13.7211 14.0455 14.4166C16.2273 15.1754 21.8183 16.2503 28.091 11.0021L29.1137 10.0537L29.1819 9.99044L29.4547 9.73752L29.3183 9.42137C29.2501 9.16844 29.1137 8.85229 28.9774 8.53613L28.6365 7.65088L27.9546 8.28319C27.8865 8.40965 27.7501 8.47289 27.6137 8.59935C24.6137 11.4448 19.9773 14.3534 14.6591 12.5829C12.2728 11.7609 9.81822 11.6345 7.56821 12.2035C5.38639 12.7726 3.47729 13.8476 1.70455 15.3651V15.3019L0.681822 16.3136C0.681822 16.3768 0.613653 16.3768 0.545471 16.44L0.340912 16.6297L0.409098 16.8827C0.47728 17.1988 0.61364 17.515 0.681822 17.8311L1.09092 18.8428L1.77274 18.0208C1.84092 17.8944 1.97728 17.8311 2.04546 17.7047C3.47729 16.5033 5.45457 14.796 8.25003 14.1005Z" fill="currentColor"/>
-            <path d="M1.63639 12.9623C3.20457 11.4447 4.97729 10.4962 6.88639 9.99039C8.72731 9.54777 10.7046 9.611 12.6819 10.3065C18.8183 12.3932 24.1365 8.97869 26.4546 7.14498L27.341 6.32298L27.6819 6.07004L27.4092 5.69067C27.2046 5.50097 27.0683 5.24805 26.8637 4.99512L26.4546 4.48926L25.9774 4.93188C25.9092 4.99512 25.7728 5.12157 25.7046 5.18481C22.841 7.71406 18.4092 10.3066 13.3637 8.53608C10.9773 7.71407 8.52276 7.5876 6.27276 8.15669C4.84093 8.53607 3.47729 9.16838 2.11365 9.99039L0.681821 11.0653C0.545456 11.1918 0.477274 11.255 0.34091 11.3815L0.204559 11.5079V11.6976C0.136377 12.1403 0.136368 12.5829 0.0681862 12.9623L0 14.5431L1.1591 13.4049C1.29547 13.2784 1.43184 13.0887 1.63639 12.9623Z" fill="currentColor"/>
-            <path d="M19.5682 25.2293L19.4318 25.6087L19.5682 25.2293C19.3636 25.1661 19.2273 25.1029 19.0227 25.0396C16.6364 24.2176 14.1818 24.0912 11.9318 24.6603C11.4545 24.7867 10.9772 24.9132 10.5 25.1029L8.86359 25.7984L8.45451 25.9881L9.81815 26.4307C10.2272 26.5572 10.6363 26.6836 11.0454 26.8101L11.25 26.8733L11.4545 26.8101C11.6591 26.7469 11.8636 26.6204 12.0682 26.6204C12.2045 26.6204 12.3409 26.5572 12.4773 26.494C14.1136 26.1146 15.8863 26.1146 17.7954 26.6836C18 26.7469 18.1364 26.8101 18.3409 26.8733L18.6818 26.9998L18.8864 26.9366C19.3636 26.8101 19.9091 26.6836 20.3182 26.494L22.2273 25.8616L20.25 25.419C20.0455 25.3558 19.7727 25.2926 19.5682 25.2293Z" fill="currentColor"/>
-            <path d="M30 12.1406L28.9772 13.0891C28.8409 13.2156 28.7045 13.342 28.5682 13.4685C25.7727 15.9345 21.2727 18.5902 16.2272 16.8197C13.8408 15.9977 11.3863 15.8713 9.13627 16.4404C7.02263 17.0094 5.11351 18.0211 3.40896 19.5387L2.5226 20.4239L2.24988 20.7401L2.5226 21.1195C2.72715 21.3724 2.86352 21.5621 2.99988 21.815L3.40896 22.3841L3.88624 21.815C3.95443 21.7518 4.09079 21.6253 4.15897 21.5621C5.79534 19.9181 7.56807 18.9064 9.61353 18.4005C11.4544 17.9579 13.4317 18.0211 15.409 18.7167C17.1136 19.2858 18.8863 19.4755 20.659 19.2858C23.7954 18.9696 26.9318 17.3256 29.25 15.4919C29.3863 15.3654 29.5227 15.3022 29.6591 15.1757L29.8636 14.986V14.7963C29.8636 14.417 29.9318 13.9743 29.9318 13.595L30 12.1406Z" fill="currentColor"/>
-            <path d="M4.09106 6.32341L3.88652 5.94402L4.09106 6.32341C4.50015 6.13372 4.97744 6.00725 5.38654 5.88078C7.22745 5.43816 9.20473 5.5014 11.182 6.19694C12.4775 6.63956 13.7729 6.82925 15.2047 6.82925C18.0684 6.82925 20.932 5.88079 23.5911 4.04708L24.6139 3.2883L24.9548 3.03538L24.3411 2.59275C24.1366 2.40305 23.8639 2.21337 23.5911 2.08691L23.182 1.83398L22.8411 2.08691C22.7048 2.15014 22.6366 2.2766 22.5002 2.33983C18.8866 4.86908 15.2729 5.56463 11.8638 4.36324C9.40928 3.54123 6.95471 3.35154 4.50016 4.04708C4.29561 4.11031 4.09106 4.17353 3.81834 4.23677L3.68198 4.3L3.47743 4.48969C3.47743 4.55292 3.40926 4.55293 3.34107 4.61616C3.06835 4.99555 2.72742 5.31171 2.4547 5.6911L1.15924 7.5248L3.27289 6.5131C3.6138 6.5131 3.88651 6.38664 4.09106 6.32341Z" fill="currentColor"/>
-            <path d="M9.68186 2.02339L9.8864 2.08663C10.7728 2.40278 12.1364 2.71894 13.841 2.71894C15.6137 2.71894 17.3183 2.33955 19.0228 1.70723L21.1364 0.758764L19.7046 0.316157C19.2955 0.189694 18.8864 0.0632313 18.4092 0H18.2046L18.0001 0.0632159C17.7955 0.126447 17.591 0.252925 17.3864 0.316157C15.341 1.0117 13.2955 1.13816 11.3182 0.632313C11.1137 0.569082 10.9091 0.505839 10.7046 0.442608L10.5001 0.379372L10.2955 0.442608C9.88641 0.56907 9.47732 0.69554 9.06823 0.885234L7.50003 1.51755L9.13642 1.96015C9.27278 1.89692 9.47732 1.96016 9.68186 2.02339Z" fill="currentColor"/>
-          </svg>
-
+          <img src="/assets/icon/logo.svg" alt="MOOD WAVE 로고" />
           <span>MOOD WAVE</span>
         </a>
 
@@ -230,12 +218,12 @@ function renderNav() {
 // 사이드바 닫기 함수
 // =========================
 function closeSidebar() {
-  const sidebar = document.querySelector(".sidebar");
-  const overlay = document.querySelector(".sidebar-overlay");
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
 
-  sidebar?.classList.remove("is-open");
-  overlay?.classList.remove("is-open");
-  document.body.classList.remove("is-sidebar-open");
+  sidebar?.classList.remove('is-open');
+  overlay?.classList.remove('is-open');
+  document.body.classList.remove('is-sidebar-open');
 }
 
 // =========================
@@ -287,48 +275,6 @@ function renderPlaylists() {
               <span></span>
               <span></span>
             </button>
-<<<<<<< HEAD
-
-            <div
-              class="playlist-more-menu ${isMenuOpen ? 'is-open' : ''}"
-              data-playlist-menu="${index}"
-              style="${isMenuOpen ? `top: ${menuPosition.top}px; left: ${menuPosition.left}px;` : ''}"
-            >
-              <button
-                type="button"
-                class="playlist-more-menu__item"
-                data-share-playlist-index="${index}"
-              >
-                <span class="playlist-more-menu__icon">
-                  ${shareIcon()}
-                </span>
-                <span>플레이리스트 공유</span>
-              </button>
-
-              <button
-                type="button"
-                class="playlist-more-menu__item"
-                data-rename-playlist-index="${index}"
-              >
-                <span class="playlist-more-menu__icon">
-                  ${editIcon()}
-                </span>
-                <span>플레이리스트 이름 바꾸기</span>
-              </button>
-
-              <button
-                type="button"
-                class="playlist-more-menu__item playlist-more-menu__item--delete"
-                data-delete-playlist-index="${index}"
-              >
-                <span class="playlist-more-menu__icon">
-                  ${trashIcon()}
-                </span>
-                <span>플레이리스트 삭제</span>
-              </button>
-            </div>
-=======
->>>>>>> develop
           </div>
         </div>
       `;
@@ -398,7 +344,7 @@ function createPlaylist(title) {
   }
 
   if (playlistState.includes(newPlaylist)) {
-    alert("이미 같은 이름의 플레이리스트가 있습니다.");
+    alert('이미 같은 이름의 플레이리스트가 있습니다.');
     return;
   }
 
@@ -412,7 +358,7 @@ function createPlaylist(title) {
 // 플레이리스트 더보기 메뉴 생성 / 삭제 함수
 // =========================
 function removeFloatingPlaylistMenu() {
-  const menus = document.querySelectorAll(".playlist-more-menu");
+  const menus = document.querySelectorAll('.playlist-more-menu');
 
   menus.forEach((menu) => {
     menu.remove();
@@ -420,9 +366,9 @@ function removeFloatingPlaylistMenu() {
 }
 
 function createFloatingPlaylistMenu(index) {
-  const menu = document.createElement("div");
+  const menu = document.createElement('div');
 
-  menu.className = "playlist-more-menu is-open";
+  menu.className = 'playlist-more-menu is-open';
   menu.dataset.playlistMenu = index;
 
   menu.innerHTML = `
@@ -509,13 +455,9 @@ async function sharePlaylist(index) {
   if (!playlistName) return;
 
   const shareText = `MOOD WAVE 플레이리스트: ${playlistName}`;
-<<<<<<< HEAD
-  const shareUrl = `${window.location.origin}${window.location.pathname}#playlist=${encodeURIComponent(playlistName)}`;
-=======
   const shareUrl = `${window.location.origin}${window.location.pathname}#/playlist?name=${encodeURIComponent(
     playlistName,
   )}`;
->>>>>>> develop
 
   closePlaylistMoreMenu();
 
@@ -591,7 +533,7 @@ function renamePlaylist(title) {
   }
 
   if (playlistState.includes(newTitle)) {
-    alert("이미 같은 이름의 플레이리스트가 있습니다.");
+    alert('이미 같은 이름의 플레이리스트가 있습니다.');
     return;
   }
 
@@ -656,36 +598,22 @@ function deletePlaylist() {
 // =========================
 // 사이드바 내부 클릭 이벤트 등록 함수
 // =========================
-<<<<<<< HEAD
-function bindPlaylistModalEvents() {
-  const createPlaylistButton = document.querySelector('[data-create-playlist]');
-  const closeButtons = document.querySelectorAll('[data-close-playlist-modal]');
-  const playlistForm = document.querySelector('#playlistForm');
-  const playlistInput = document.querySelector('#playlistInput');
-
-  if (createPlaylistButton) {
-    createPlaylistButton.addEventListener('click', async (event) => {
-=======
 function bindSidebarClickEvents() {
-  const sidebar = document.querySelector("#sidebar");
+  const sidebar = document.querySelector('#sidebar');
 
   if (!sidebar || isSidebarEventBound) return;
 
   isSidebarEventBound = true;
 
-  sidebar.addEventListener("click", async (event) => {
-    const closeSidebarButton = event.target.closest("[data-close-sidebar]");
-    const createPlaylistButton = event.target.closest("[data-create-playlist]");
-    const closePlaylistButton = event.target.closest(
-      "[data-close-playlist-modal]",
-    );
-    const closeRenameButton = event.target.closest("[data-close-rename-modal]");
-    const closeDeleteButton = event.target.closest("[data-close-delete-modal]");
-    const playlistLink = event.target.closest(".sidebar__playlist-item");
-    const menuButton = event.target.closest("[data-playlist-menu-button]");
-    const confirmDeleteButton = event.target.closest(
-      "#confirmDeletePlaylistButton",
-    );
+  sidebar.addEventListener('click', async (event) => {
+    const closeSidebarButton = event.target.closest('[data-close-sidebar]');
+    const createPlaylistButton = event.target.closest('[data-create-playlist]');
+    const closePlaylistButton = event.target.closest('[data-close-playlist-modal]');
+    const closeRenameButton = event.target.closest('[data-close-rename-modal]');
+    const closeDeleteButton = event.target.closest('[data-close-delete-modal]');
+    const playlistLink = event.target.closest('.sidebar__playlist-item');
+    const menuButton = event.target.closest('[data-playlist-menu-button]');
+    const confirmDeleteButton = event.target.closest('#confirmDeletePlaylistButton');
 
     if (closeSidebarButton) {
       event.preventDefault();
@@ -694,7 +622,6 @@ function bindSidebarClickEvents() {
     }
 
     if (createPlaylistButton) {
->>>>>>> develop
       event.preventDefault();
 
       const canUse = await requireLogin('플레이리스트 생성은 로그인 후 이용할 수 있습니다.');
@@ -705,43 +632,12 @@ function bindSidebarClickEvents() {
       return;
     }
 
-<<<<<<< HEAD
-  closeButtons.forEach((button) => {
-    button.addEventListener('click', closePlaylistModal);
-  });
-
-  if (playlistForm && playlistInput) {
-    playlistForm.addEventListener('submit', (event) => {
-=======
     if (closePlaylistButton) {
->>>>>>> develop
       event.preventDefault();
       closePlaylistModal();
       return;
     }
 
-<<<<<<< HEAD
-// =========================
-// 플레이리스트 더보기 메뉴 이벤트 등록 함수
-// =========================
-function bindPlaylistMoreMenuEvents() {
-  const playlistList = document.querySelector('#playlistList');
-
-  if (!playlistList) return;
-
-<<<<<<< HEAD
-  playlistList.addEventListener('click', async (event) => {
-    const playlistLink = event.target.closest('.sidebar__playlist-item');
-    const menuButton = event.target.closest('[data-playlist-menu-button]');
-    const shareButton = event.target.closest('[data-share-playlist-index]');
-    const renameButton = event.target.closest('[data-rename-playlist-index]');
-    const deleteButton = event.target.closest('[data-delete-playlist-index]');
-=======
-  playlistList.addEventListener("click", async (event) => {
-    const playlistLink = event.target.closest(".sidebar__playlist-item");
-    const menuButton = event.target.closest("[data-playlist-menu-button]");
->>>>>>> develop
-=======
     if (closeRenameButton) {
       event.preventDefault();
       closeRenamePlaylistModal();
@@ -753,7 +649,6 @@ function bindPlaylistMoreMenuEvents() {
       closeDeletePlaylistModal();
       return;
     }
->>>>>>> develop
 
     if (playlistLink) {
       const canUse = await requireLogin('플레이리스트는 로그인 후 이용할 수 있습니다.');
@@ -788,29 +683,29 @@ function bindPlaylistMoreMenuEvents() {
 // 사이드바 내부 form 이벤트 등록 함수
 // =========================
 function bindSidebarSubmitEvents() {
-  const sidebar = document.querySelector("#sidebar");
+  const sidebar = document.querySelector('#sidebar');
 
   if (!sidebar || isSidebarSubmitEventBound) return;
 
   isSidebarSubmitEventBound = true;
 
-  sidebar.addEventListener("submit", (event) => {
-    const playlistForm = event.target.closest("#playlistForm");
-    const renameForm = event.target.closest("#renamePlaylistForm");
+  sidebar.addEventListener('submit', (event) => {
+    const playlistForm = event.target.closest('#playlistForm');
+    const renameForm = event.target.closest('#renamePlaylistForm');
 
     if (playlistForm) {
       event.preventDefault();
 
-      const playlistInput = document.querySelector("#playlistInput");
-      createPlaylist(playlistInput?.value || "");
+      const playlistInput = document.querySelector('#playlistInput');
+      createPlaylist(playlistInput?.value || '');
       return;
     }
 
     if (renameForm) {
       event.preventDefault();
 
-      const renameInput = document.querySelector("#renamePlaylistInput");
-      renamePlaylist(renameInput?.value || "");
+      const renameInput = document.querySelector('#renamePlaylistInput');
+      renamePlaylist(renameInput?.value || '');
     }
   });
 }
@@ -823,12 +718,12 @@ function bindDocumentEvents() {
 
   isDocumentEventBound = true;
 
-  document.addEventListener("click", (event) => {
-    const menuButton = event.target.closest("[data-playlist-menu-button]");
-    const moreMenu = event.target.closest(".playlist-more-menu");
-    const shareButton = event.target.closest("[data-share-playlist-index]");
-    const renameButton = event.target.closest("[data-rename-playlist-index]");
-    const deleteButton = event.target.closest("[data-delete-playlist-index]");
+  document.addEventListener('click', (event) => {
+    const menuButton = event.target.closest('[data-playlist-menu-button]');
+    const moreMenu = event.target.closest('.playlist-more-menu');
+    const shareButton = event.target.closest('[data-share-playlist-index]');
+    const renameButton = event.target.closest('[data-rename-playlist-index]');
+    const deleteButton = event.target.closest('[data-delete-playlist-index]');
 
     if (shareButton) {
       event.preventDefault();
@@ -863,65 +758,13 @@ function bindDocumentEvents() {
       return;
     }
 
-<<<<<<< HEAD
-  document.addEventListener('click', (event) => {
-    const isInsideMenu = event.target.closest('.sidebar__playlist-more-wrap');
-
-    if (isInsideMenu) return;
-=======
     if (menuButton || moreMenu) return;
->>>>>>> develop
 
     closePlaylistMoreMenu();
   });
 
-<<<<<<< HEAD
-// =========================
-// 플레이리스트 이름 변경 이벤트 등록 함수
-// =========================
-function bindPlaylistRenameEvents() {
-  const closeButtons = document.querySelectorAll('[data-close-rename-modal]');
-  const renameForm = document.querySelector('#renamePlaylistForm');
-  const renameInput = document.querySelector('#renamePlaylistInput');
-
-  closeButtons.forEach((button) => {
-    button.addEventListener('click', closeRenamePlaylistModal);
-  });
-
-  if (renameForm && renameInput) {
-    renameForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      renamePlaylist(renameInput.value);
-    });
-  }
-}
-
-// =========================
-// 플레이리스트 삭제 이벤트 등록 함수
-// =========================
-function bindPlaylistDeleteEvents() {
-  const closeButtons = document.querySelectorAll('[data-close-delete-modal]');
-  const confirmDeleteButton = document.querySelector('#confirmDeletePlaylistButton');
-
-  closeButtons.forEach((button) => {
-    button.addEventListener('click', closeDeletePlaylistModal);
-  });
-
-  if (confirmDeleteButton) {
-    confirmDeleteButton.addEventListener('click', deletePlaylist);
-  }
-}
-
-// =========================
-// 공통 키보드 이벤트 등록 함수
-// =========================
-function bindKeyboardEvents() {
   window.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
-=======
-  window.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape") return;
->>>>>>> develop
 
     closeSidebar();
     closePlaylistMoreMenu();
@@ -1015,21 +858,6 @@ function trashIcon() {
 }
 
 // =========================
-<<<<<<< HEAD
-// HTML 특수문자 변환 함수
-// =========================
-function escapeHTML(text) {
-  return String(text)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
-}
-
-// =========================
-=======
->>>>>>> develop
 // 사이드바 초기 실행 함수
 // =========================
 export async function initSidebar() {

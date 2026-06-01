@@ -18,37 +18,7 @@ function getPlaylistNameFromHash() {
 // =========================
 // 페이지 헤더 HTML 생성 함수
 // =========================
-function formatDuration(durationMs) {
-  if (!durationMs) return '-';
-
-  const totalSeconds = Math.floor(durationMs / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  return `${minutes}:${String(seconds).padStart(2, '0')}`;
-}
-
-// =========================
-// HTML 특수문자 변환 함수
-// =========================
-function escapeHTML(value = '') {
-  return String(value).replace(/[&<>"']/g, (char) => {
-    const escapeMap = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#039;',
-    };
-
-    return escapeMap[char];
-  });
-}
-
-// =========================
-// 휴지통 아이콘 함수
-// =========================
-function trashIcon() {
+function renderPageHeader(title, description) {
   return `
     <div class="song-table-page__header">
       <h2 class="song-table-page__title">${escapeHTML(title)}</h2>
@@ -62,73 +32,11 @@ function trashIcon() {
 // =========================
 function createPlaylistRow(playlistName) {
   return `
-    <a
-      href="#/playlist?name=${encodeURIComponent(playlistName)}"
-      class="playlist-card"
-    >
-      <div class="playlist-card__cover">
-        <img src="/assets/icon/Library_S.svg" alt="" />
-      </div>
-
-      <div class="playlist-card__info">
-        <strong class="playlist-card__title">
-          ${escapeHTML(playlistName)}
-        </strong>
-        <span class="playlist-card__desc">Playlist</span>
-      </div>
-    </a>
-  `;
-}
-
-// =========================
-// 플레이리스트 곡 row 생성 함수
-// =========================
-function createPlaylistTrackRow(track, index) {
-  const rowNumber = index + 1;
-
-  return `
-    <tr
-      class="song-row"
-      data-play-track
-      data-id="${escapeHTML(track.id)}"
-      data-uri="${escapeHTML(track.uri || '')}"
-      data-title="${escapeHTML(track.title)}"
-      data-artist="${escapeHTML(track.artist)}"
-      data-cover="${escapeHTML(track.cover || '')}"
-    >
-      <td>${rowNumber}</td>
-
-      <td>
-        <div class="song-info">
-          <img
-            class="song-info__cover"
-            src="${escapeHTML(track.cover || '')}"
-            alt=""
-          />
-
-          <div class="song-info__text">
-            <span class="song-info__title">
-              ${escapeHTML(track.title)}
-            </span>
-            <span class="song-info__artist">
-              ${escapeHTML(track.artist)}
-            </span>
-          </div>
-        </div>
-      </td>
-
-      <td>${escapeHTML(track.releaseDate || '-')}</td>
-      <td>${formatDuration(track.durationMs || track.duration_ms)}</td>
-
-      <td>
-        <button
-          type="button"
-          class="playlist-track-remove-button"
-          data-no-play
-          data-remove-playlist-track
-          data-track-id="${escapeHTML(track.id)}"
-          aria-label="플레이리스트에서 제거"
-          title="제거"
+    <tr>
+      <td colspan="5">
+        <a
+          href="#/playlist?name=${encodeURIComponent(playlistName)}"
+          class="song-table__link"
         >
           ${escapeHTML(playlistName)}
         </a>
@@ -263,14 +171,3 @@ export function initPlaylistPage() {
   renderPlaylistDetail(playlistName);
   bindPlaylistTrackRemoveEvents();
 }
-
-// =========================
-// 날씨 플레이리스트 초기 실행
-// =========================
-renderCommonLayout();
-
-function initWeatherPlaylist() {
-  console.log('Weather Playlist page loaded');
-}
-
-initWeatherPlaylist();
