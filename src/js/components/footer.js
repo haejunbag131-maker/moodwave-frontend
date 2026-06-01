@@ -1071,6 +1071,7 @@ function createSpotifyPlayer() {
 
     currentTrackId = state.track_window.current_track.id;
 
+    isLiked();
     isPlaying = !state.paused;
     updatePlayButtonIcon();
 
@@ -1329,6 +1330,23 @@ export function renderFooter() {
       </button>
     </div>
   `;
+}
+
+async function isLiked() {
+  const likeButton = document.querySelector("#likeButton img");
+  console.log("isliked 트랙 아이디", currentTrackId);
+  const res = await fetch(`${API_BASE_URL}/api/islike`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ musicId: currentTrackId }),
+    credentials: "include",
+  });
+  const data = await res.json();
+  if (data.result === "ok") {
+    likeButton.src = "/assets/icon/Heart_Fill_XS.svg";
+  } else {
+    likeButton.src = "/assets/icon/Heart_XS.svg";
+  }
 }
 
 // =========================
