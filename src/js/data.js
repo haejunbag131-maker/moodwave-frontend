@@ -72,7 +72,7 @@ export const playlistMap = {
     weather: 'Rainy',
     title: 'Overcast Vibes',
     desc: '차분하게 하루를 정리하고 싶을 때',
-    image: '/assets/img/rainy(1).jpg',
+    image: '/assets/img/rainy.jpg',
     genre: 'Lo-fi • Jazz • Acoustic',
     tag: 'FOR RAINY DAYS',
     label: 'RAINY PLAYLIST',

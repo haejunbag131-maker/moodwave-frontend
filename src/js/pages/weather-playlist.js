@@ -70,8 +70,6 @@ function renderWeatherTracks() {
 renderPlaylistHero();
 renderWeatherTracks();
 
-console.log('테스트 시작');
-
 // =========================
 // 플레이리스트 페이지 초기 실행 함수
 // =========================
