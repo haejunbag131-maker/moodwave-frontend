@@ -1,7 +1,6 @@
 import { isLiked } from "../components/footer.js";
 import { renderSongTable } from "../components/songTable.js";
-
-const API_BASE_URL = "http://127.0.0.1:8080";
+import { LIKE_API_URL } from "../config/api.js";
 
 // =========================
 // 좋아요 페이지 HTML 렌더링
@@ -29,7 +28,7 @@ async function loadLikedTracks() {
   if (!container) return;
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/like`, {
+    const response = await fetch(LIKE_API_URL, {
       method: "GET",
       credentials: "include",
     });
@@ -66,7 +65,7 @@ async function removeLike(musicId) {
   console.log("삭제할 musicId:", musicId);
 
   const response = await fetch(
-    `${API_BASE_URL}/api/like/${encodeURIComponent(musicId)}`,
+    `${LIKE_API_URL}/${encodeURIComponent(musicId)}`,
     {
       method: "DELETE",
       credentials: "include",
@@ -79,8 +78,8 @@ async function removeLike(musicId) {
     throw new Error("좋아요 삭제 실패");
   }
 
-  // 푸터 하트 상태 갱신용
-  isLiked();
+  // 푸터 하트 상태 갱신
+  await isLiked();
 
   // 다른 페이지/컴포넌트에도 좋아요 변경 알림
   window.dispatchEvent(new Event("likeChanged"));
