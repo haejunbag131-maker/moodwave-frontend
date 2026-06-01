@@ -5,6 +5,7 @@ import {
 } from "../utils/playlistStorage.js";
 
 import { showConfirm } from "../utils/confirm.js";
+import { escapeHTML } from "../utils/escapeHTML.js";
 import { renderSongTable } from "../components/songTable.js";
 
 // =========================
@@ -19,20 +20,15 @@ function getPlaylistNameFromHash() {
 }
 
 // =========================
-// HTML 특수문자 변환 함수
+// 페이지 헤더 HTML 생성 함수
 // =========================
-function escapeHTML(value = "") {
-  return String(value).replace(/[&<>"']/g, (char) => {
-    const escapeMap = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
-    };
-
-    return escapeMap[char];
-  });
+function renderPageHeader(title, description) {
+  return `
+    <div class="song-table-page__header">
+      <h2 class="song-table-page__title">${escapeHTML(title)}</h2>
+      <p class="song-table-page__desc">${escapeHTML(description)}</p>
+    </div>
+  `;
 }
 
 // =========================
@@ -48,6 +44,19 @@ function createPlaylistRow(playlistName) {
         >
           ${escapeHTML(playlistName)}
         </a>
+      </td>
+    </tr>
+  `;
+}
+
+// =========================
+// 빈 플레이리스트 행 생성 함수
+// =========================
+function createEmptyPlaylistRow() {
+  return `
+    <tr>
+      <td colspan="5" class="song-table__empty">
+        생성한 플레이리스트가 없습니다.
       </td>
     </tr>
   `;
@@ -73,13 +82,13 @@ function renderPlaylistOverview() {
 
   if (!content) return;
 
+  const playlistRows =
+    playlistNames.length === 0
+      ? createEmptyPlaylistRow()
+      : playlistNames.map(createPlaylistRow).join("");
+
   content.innerHTML = `
-    <div class="song-table-page__header">
-      <h2 class="song-table-page__title">Your Playlists</h2>
-      <p class="song-table-page__desc">
-        생성한 플레이리스트를 확인해보세요.
-      </p>
-    </div>
+    ${renderPageHeader("Your Playlists", "생성한 플레이리스트를 확인해보세요.")}
 
     <table class="song-table">
       <thead>
@@ -89,17 +98,7 @@ function renderPlaylistOverview() {
       </thead>
 
       <tbody>
-        ${
-          playlistNames.length === 0
-            ? `
-              <tr>
-                <td colspan="5" class="song-table__empty">
-                  생성한 플레이리스트가 없습니다.
-                </td>
-              </tr>
-            `
-            : playlistNames.map(createPlaylistRow).join("")
-        }
+        ${playlistRows}
       </tbody>
     </table>
   `;
@@ -110,8 +109,6 @@ function renderPlaylistOverview() {
 // =========================
 function renderPlaylistDetail(playlistName) {
   const content = document.querySelector("#playlistPageContent");
-  const playlistTrackMap = loadPlaylistTrackMap();
-  const tracks = playlistTrackMap[playlistName] || [];
 
   if (!content) return;
 
@@ -120,15 +117,13 @@ function renderPlaylistDetail(playlistName) {
     return;
   }
 
+  const playlistTrackMap = loadPlaylistTrackMap();
+  const tracks = playlistTrackMap[playlistName] || [];
+  const description =
+    tracks.length > 0 ? `${tracks.length}곡` : "아직 추가된 곡이 없습니다.";
+
   content.innerHTML = `
-    <div class="song-table-page__header">
-      <h2 class="song-table-page__title">
-        ${escapeHTML(playlistName)}
-      </h2>
-      <p class="song-table-page__desc">
-        ${tracks.length > 0 ? `${tracks.length}곡` : "아직 추가된 곡이 없습니다."}
-      </p>
-    </div>
+    ${renderPageHeader(playlistName, description)}
 
     ${renderSongTable(tracks, {
       actionType: "playlist-remove",
@@ -147,6 +142,7 @@ function bindPlaylistTrackRemoveEvents() {
   if (!content) return;
 
   if (content.dataset.removeEventBound === "true") return;
+
   content.dataset.removeEventBound = "true";
 
   content.addEventListener("click", async (event) => {
