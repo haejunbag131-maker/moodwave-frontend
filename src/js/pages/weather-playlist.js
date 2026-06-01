@@ -7,6 +7,9 @@ import { playlistMap, weatherTracks } from '../data.js';
 export function renderWeatherPlaylistPage() {
   return `
     <!-- 플레이리스트 히어로 섹션 -->
+<div class="playlist-sticky-header">
+  <span class="sticky-title"></span>
+</div>
     <div class="playlist-hero-container">
       <div class="playlist-cover" id="weatherPlaylistCover"></div>
 
@@ -104,6 +107,22 @@ function renderPlaylistHero(playlist) {
   const playlistTitle = document.querySelector('#weatherPlaylistTitle');
   const playlistDesc = document.querySelector('#weatherPlaylistDesc');
   const playlistGenre = document.querySelector('#weatherPlaylistGenre');
+
+  // 스크롤 시 스티키 헤더
+  const main = document.querySelector('.playlist-main');
+  const hero = document.querySelector('.playlist-hero-container');
+  const stickyHeader = document.querySelector('.playlist-sticky-header');
+  const stickyTitle = document.querySelector('.sticky-title');
+
+  stickyTitle.textContent = playlist.title;
+
+  main.addEventListener('scroll', () => {
+    if (main.scrollTop > 250) {
+      stickyHeader.classList.add('show');
+    } else {
+      stickyHeader.classList.remove('show');
+    }
+  });
 
   if (!playlistCover || !playlistLabel || !playlistTitle || !playlistDesc || !playlistGenre) {
     return;

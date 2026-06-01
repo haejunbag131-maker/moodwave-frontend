@@ -11,7 +11,12 @@ export function renderWeatherPage() {
     <section class="weather-hero">
       <p class="section-label">CURRENT WEATHER</p>
 
-      <div class="weather-hero-content">
+      <div id="weatherLoading" class="loading">
+        <div class="loading__spinner"></div>
+        <span>현재 날씨 확인 중...</span>
+      </div>
+
+  <div id="weatherContent" class="weather-hero-content" hidden>
         <div class="weather-info-box">
           <div class="weather-heading">
             <img
@@ -36,7 +41,17 @@ export function renderWeatherPage() {
     <section class="featured-playlist">
       <p class="section-label">TODAY'S PLAYLIST</p>
 
-      <a class="featured-card" id="featuredCard">
+    <div id="featuredSkeleton" class="featured-card">
+      <div class="playlist-album skeleton"></div>
+      <div class="featured-playlist-info">
+        <div class="playlist-tag-skeleton skeleton"></div>
+        <div class="playlist-title-skeleton skeleton"></div>
+        <div class="playlist-genre-skeleton skeleton"></div>
+        <div class="playlist-desc-skeleton skeleton"></div>
+      </div>
+    </div>
+
+      <a class="featured-card" id="featuredCard" hidden>
         <div class="playlist-album" id="playlistAlbum">
           <div class="playlist-album-bg" id="playlistAlbumImg"></div>
 
@@ -71,7 +86,45 @@ export function renderWeatherPage() {
     <section class="weather-list-section">
       <p class="section-label">OTHER VIBES</p>
 
-      <div class="weather-card-grid"></div>
+      <div id="weatherCardsSkeleton" class="weather-card-grid">
+        <div class="weather-card weather-card--skeleton">
+          <div class="other-weather-img skeleton"></div>
+
+          <div class="weather-card-content">
+            <div class="weather-card-title-skeleton skeleton"></div>
+            <div class="weather-card-desc-skeleton skeleton"></div>
+          </div>
+        </div>
+
+        <div class="weather-card weather-card--skeleton">
+          <div class="other-weather-img skeleton"></div>
+
+          <div class="weather-card-content">
+           <div class="weather-card-title-skeleton skeleton"></div>
+           <div class="weather-card-desc-skeleton skeleton"></div>
+          </div>
+        </div>
+
+        <div class="weather-card weather-card--skeleton">
+          <div class="other-weather-img skeleton"></div>
+
+          <div class="weather-card-content">
+            <div class="weather-card-title-skeleton skeleton"></div>
+            <div class="weather-card-desc-skeleton skeleton"></div>
+          </div>
+        </div>
+
+        <div class="weather-card weather-card--skeleton">
+          <div class="other-weather-img skeleton"></div>
+
+          <div class="weather-card-content">
+            <div class="weather-card-title-skeleton skeleton"></div>
+            <div class="weather-card-desc-skeleton skeleton"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="weatherCardGrid" class="weather-card-grid" hidden></div>
     </section>
   `;
 }
@@ -80,7 +133,12 @@ export function renderWeatherPage() {
 // Weather 페이지 초기화
 // =========================
 export function initWeatherPage() {
-  const weatherCardGrid = document.querySelector('.weather-card-grid');
+  const weatherCardGrid = document.querySelector('#weatherCardGrid');
+
+  const weatherLoading = document.querySelector('#weatherLoading');
+  const weatherContent = document.querySelector('#weatherContent');
+  const featuredSkeleton = document.querySelector('#featuredSkeleton');
+  const weatherCardsSkeleton = document.querySelector('#weatherCardsSkeleton');
 
   const weatherIcon = document.querySelector('#weatherIcon');
   const weatherTitle = document.querySelector('#weatherTitle');
@@ -157,6 +215,13 @@ export function initWeatherPage() {
       const city = data.name;
 
       weatherInfo.textContent = `${temp}°C · ${city}`;
+
+      weatherLoading.hidden = true;
+      weatherContent.hidden = false;
+      featuredSkeleton.hidden = true;
+      featuredCard.hidden = false;
+      weatherCardsSkeleton.hidden = true;
+      weatherCardGrid.hidden = false;
 
       updateWeather(weather);
       updatePlaylist(weather);
