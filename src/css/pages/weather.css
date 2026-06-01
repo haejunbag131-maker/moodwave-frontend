@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 .weather-main {
+=======
+weather.css .weather-main {
+>>>>>>> develop
   display: flex;
   flex-direction: column;
   gap: 60px;
