@@ -30,6 +30,7 @@ async function loadLikedTracks() {
 
   try {
     const response = await fetch(`${API_BASE_URL}/api/like`, {
+      method: "GET",
       credentials: "include",
     });
 
@@ -37,34 +38,12 @@ async function loadLikedTracks() {
       throw new Error("좋아요 목록 요청 실패");
     }
 
-    const likedItems = await response.json();
+    const tracks = await response.json();
+    console.log(tracks);
 
-    if (!likedItems.length) {
+    if (!tracks || tracks.length === 0) {
       container.innerHTML = "<p>좋아요한 곡이 없습니다.</p>";
       return;
-    }
-
-    const token = await getSpotifyAccessToken();
-    const tracks = [];
-
-    for (const item of likedItems) {
-      const id = item.musicId?.trim();
-
-      if (!id) continue;
-
-      const res = await fetch(`https://api.spotify.com/v1/tracks/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) {
-        console.error(await res.text());
-        continue;
-      }
-
-      const track = await res.json();
-      tracks.push(track);
     }
 
     container.innerHTML = renderSongTable(tracks, {
