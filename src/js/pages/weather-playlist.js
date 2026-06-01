@@ -163,7 +163,7 @@ function convertToSongTableTracks(tracks, playlistType, playlist) {
     title: track.title,
     artist: track.artist,
     durationMs: convertDurationToMs(track.duration),
-    cover: playlist.image,
+    cover: track.image,
     releaseDate: playlist.weather,
     album: playlist.title,
   }));
