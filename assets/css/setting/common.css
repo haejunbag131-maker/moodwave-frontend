@@ -1,7 +1,0 @@
-body {
-  font-family: var(--font-family);
-  font-weight: var(--font-regular);
-  letter-spacing: var(--letter-spacing-regular);
-  background-color: var(--bg);
-  color: var(--text-primary);
-}

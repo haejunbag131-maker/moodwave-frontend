@@ -1,0 +1,104 @@
+/* =========================
+   전체 컨테이너
+========================= */
+.container {
+  display: grid;
+  grid-template-columns: 310px minmax(0, 1fr);
+  grid-template-rows: 80px minmax(0, 1fr) 112px;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar main"
+    "footer footer";
+
+  width: 100%;
+  min-width: 0;
+  height: 100dvh;
+  background: #121212;
+  overflow: hidden;
+}
+
+/* 각 영역 기본 설정 */
+.sidebar {
+  grid-area: sidebar;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.header {
+  grid-area: header;
+  min-width: 0;
+}
+
+.main {
+  grid-area: main;
+  min-width: 0;
+  overflow-y: auto;
+  padding-bottom: 140px;
+}
+
+.footer {
+  grid-area: footer;
+  min-width: 0;
+}
+
+/* =========================
+   태블릿 / 모바일 공통
+========================= */
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 72px minmax(0, 1fr) 100px;
+    grid-template-areas:
+      "header"
+      "main"
+      "footer";
+  }
+
+  .main {
+    padding-bottom: 128px;
+  }
+
+  /*
+    사이드바는 grid 영역에서 빼고,
+    header.css의 position: fixed + transform으로 제어
+  */
+  .sidebar {
+    grid-area: unset;
+    display: block;
+  }
+}
+
+/* =========================
+   모바일
+========================= */
+@media (max-width: 768px) {
+  .container {
+    grid-template-rows: 72px minmax(0, 1fr) 96px;
+  }
+
+  .main {
+    padding-bottom: 124px;
+  }
+}
+
+/* =========================
+   좁은 모바일
+========================= */
+@media (max-width: 560px) {
+  .container {
+    grid-template-rows: 64px minmax(0, 1fr) 96px;
+  }
+}
+
+/* =========================
+   작은 모바일
+========================= */
+@media (max-width: 480px) {
+  .container {
+    grid-template-rows: 64px minmax(0, 1fr) 88px;
+  }
+
+  .main {
+    padding-bottom: 116px;
+  }
+}

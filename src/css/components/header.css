@@ -1,0 +1,454 @@
+/* =========================
+   헤더
+========================= */
+.header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: 100%;
+  min-width: 0;
+  height: 80px;
+  padding: 0 clamp(20px, 3vw, 41px);
+  overflow: visible;
+  background: #3333a3;
+}
+
+/* 앞, 뒤 버튼 */
+.header__nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* 햄버거 버튼 */
+.header__hamburger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.header__hamburger-btn span {
+  width: 22px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--text-primary);
+}
+
+/* 검색창 */
+.header__search {
+  display: flex;
+  align-items: center;
+  flex: 0 1 468px;
+  gap: 14px;
+  min-width: 180px;
+  max-width: 468px;
+  height: 52px;
+  padding: 0 16px;
+  overflow: hidden;
+  border-radius: 26px;
+  background: var(--text-primary);
+}
+
+.header__search-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  filter: brightness(0);
+  opacity: 0.7;
+}
+
+.header__search-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 18px;
+  line-height: 23px;
+  color: #222;
+}
+
+.header__search-input::placeholder {
+  color: #757575;
+}
+
+.header__spacer {
+  flex: 1;
+  min-width: 0;
+}
+
+/* =========================
+   로그인 / 프로필 영역
+========================= */
+.header__auth {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+/* Spotify 연동 버튼 */
+.spotify-connect-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--accent);
+  font-size: 15px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    opacity 0.2s;
+}
+
+.spotify-connect-btn:hover {
+  background: #1ed760;
+}
+
+.spotify-connect-btn:disabled {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+.spotify-connect-btn__logo {
+  flex-shrink: 0;
+  width: 84px;
+  height: auto;
+  object-fit: contain;
+}
+
+.spotify-connect-btn strong {
+  font-weight: var(--font-bold);
+}
+
+/* =========================
+   프로필
+========================= */
+.header__profile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 11px;
+  max-width: 220px;
+  height: 40px;
+  padding: 3px 8px 3px 3px;
+  overflow: visible;
+  border-radius: 40px;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.header__user-avatar {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.header__user-name {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 18px;
+  font-weight: var(--font-bold);
+  line-height: 23px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 드롭다운 버튼 */
+.header__profile-arrow-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.header__profile-arrow {
+  flex-shrink: 0;
+  border-top: 6px solid var(--text-primary);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+}
+
+/* 드롭다운 */
+.header__dropdown {
+  display: none;
+  position: absolute;
+  top: 48px;
+  right: 0;
+  z-index: 1100;
+  min-width: 120px;
+  padding: 6px;
+  border-radius: 8px;
+  background: #282828;
+}
+
+.header__profile.is-open .header__dropdown {
+  display: block;
+}
+
+.header__logout-btn {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.header__logout-btn:hover {
+  background: #3e3e3e;
+}
+
+/* =========================
+   반응형
+========================= */
+
+/* 태블릿 */
+@media (max-width: 1024px) {
+  .header {
+    position: relative;
+    justify-content: center;
+    height: 72px;
+    gap: 16px;
+    padding: 0 24px;
+  }
+
+  .header__hamburger-btn {
+    display: flex;
+    position: absolute;
+    top: 50%;
+    left: 24px;
+    transform: translateY(-50%);
+  }
+
+  .header__nav-btn {
+    display: none;
+  }
+
+  .header__search {
+    flex: none;
+    width: min(420px, calc(100vw - 300px));
+    max-width: 420px;
+    height: 48px;
+    margin: 0 auto;
+  }
+
+  .header__search-input {
+    font-size: 16px;
+  }
+
+  .header__auth {
+    position: absolute;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+    flex-shrink: 0;
+  }
+
+  .header__spacer {
+    display: none;
+  }
+
+  .header__user-name {
+    font-size: 16px;
+  }
+
+  .spotify-connect-btn {
+    height: 38px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 280px;
+    max-width: 80vw;
+    height: 100dvh;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+  }
+
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+}
+
+/* 모바일 */
+@media (max-width: 768px) {
+  .header {
+    height: 72px;
+    padding: 0 16px;
+  }
+
+  .header__hamburger-btn {
+    left: 16px;
+  }
+
+  .header__auth {
+    right: 16px;
+  }
+
+  .header__search {
+    width: min(320px, calc(100vw - 210px));
+    min-width: 0;
+    max-width: none;
+    height: 44px;
+    gap: 10px;
+    padding: 0 14px;
+  }
+
+  .header__search-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .header__search-input {
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .header__user-name {
+    display: none;
+  }
+
+  .header__profile {
+    gap: 6px;
+    padding-right: 6px;
+  }
+
+  .spotify-connect-btn {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 50%;
+  }
+
+  .spotify-connect-btn strong {
+    display: none;
+  }
+
+  .spotify-connect-btn__logo {
+    width: 26px;
+    height: 26px;
+    object-fit: cover;
+    object-position: left center;
+  }
+
+  .header__dropdown {
+    top: 48px;
+    right: 0;
+  }
+}
+
+/* 좁은 모바일: 검색창 / 프로필 겹침 방지 */
+@media (max-width: 560px) {
+  .header {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) max-content;
+    align-items: center;
+    height: 64px;
+    column-gap: 10px;
+    padding: 0 14px;
+  }
+
+  .header__hamburger-btn {
+    position: static;
+    grid-column: 1;
+    justify-self: start;
+    width: 36px;
+    height: 36px;
+    transform: none;
+  }
+
+  .header__search {
+    grid-column: 2;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: 42px;
+    margin: 0;
+    padding: 0 12px;
+  }
+
+  .header__auth {
+    position: static;
+    grid-column: 3;
+    justify-self: end;
+    min-width: 0;
+    transform: none;
+  }
+
+  .header__search-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .header__search-input {
+    font-size: 14px;
+  }
+
+  .header__search-input::placeholder {
+    font-size: 14px;
+  }
+}
+
+/* 작은 모바일 */
+@media (max-width: 480px) {
+  .header {
+    grid-template-columns: 36px minmax(0, 1fr) max-content;
+    column-gap: 8px;
+    padding: 0 12px;
+  }
+
+  .header__search {
+    height: 40px;
+  }
+}
+
+/* 아주 좁은 화면 */
+@media (max-width: 360px) {
+  .header {
+    grid-template-columns: 34px minmax(0, 1fr) max-content;
+    column-gap: 6px;
+    padding: 0 10px;
+  }
+
+  .header__hamburger-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .header__search {
+    height: 38px;
+    padding: 0 10px;
+  }
+
+  .header__search-icon {
+    width: 20px;
+    height: 20px;
+  }
+}

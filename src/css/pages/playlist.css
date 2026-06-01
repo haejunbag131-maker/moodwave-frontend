@@ -1,0 +1,160 @@
+/* =========================
+   플레이리스트
+========================= */
+.playlist-page {
+  width: 100%;
+  padding-bottom: 120px;
+}
+
+.playlist-page__header {
+  width: 100%;
+  margin-bottom: 28px;
+}
+
+.playlist-page__title {
+  overflow: hidden;
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.playlist-page__desc {
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+/* =========================
+   카드 목록
+========================= */
+.playlist-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.playlist-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  padding: 16px;
+  border-radius: 14px;
+  background: #181818;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.playlist-card:hover {
+  background: #282828;
+  transform: translateY(-2px);
+}
+
+.playlist-card__cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1db954, #191414);
+}
+
+.playlist-card__cover img {
+  width: 48px;
+  height: 48px;
+}
+
+.playlist-card__info {
+  min-width: 0;
+}
+
+.playlist-card__title {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* =========================
+   플레이리스트 곡 제거 버튼
+========================= */
+.playlist-track-remove-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.playlist-track-remove-button:hover {
+  background: rgba(255, 77, 77, 0.14);
+  color: #ff4d4d;
+  transform: scale(1.06);
+}
+
+.playlist-track-remove-button svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+}
+
+/* =========================
+   반응형
+   540px 이하에서 발매일 / 재생시간 숨김
+========================= */
+@media (max-width: 540px) {
+  .playlist-page table th:nth-child(3),
+  .playlist-page table td:nth-child(3),
+  .playlist-page table th:nth-child(4),
+  .playlist-page table td:nth-child(4) {
+    display: none;
+  }
+
+  .playlist-page table th:nth-child(1),
+  .playlist-page table td:nth-child(1) {
+    width: 32px;
+    padding-left: 0;
+    padding-right: 8px;
+  }
+
+  .playlist-page table th:nth-child(2),
+  .playlist-page table td:nth-child(2) {
+    width: auto;
+  }
+
+  .playlist-page table th:nth-child(5),
+  .playlist-page table td:nth-child(5) {
+    width: 42px;
+    padding-left: 8px;
+    padding-right: 0;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .playlist-track-remove-button {
+    width: 32px;
+    height: 32px;
+  }
+
+  .playlist-track-remove-button svg {
+    width: 20px;
+    height: 20px;
+  }
+}

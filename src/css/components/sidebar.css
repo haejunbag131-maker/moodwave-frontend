@@ -1,0 +1,474 @@
+/* =========================
+   사이드바
+========================= */
+.sidebar {
+  grid-area: sidebar;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: #000;
+  overflow: hidden;
+}
+
+.sidebar__header {
+  flex-shrink: 0;
+  padding: 0 30px;
+}
+
+/* =========================
+   로고
+========================= */
+.sidebar__brand {
+  height: 70px;
+  margin-bottom: 20px;
+}
+
+.sidebar__brand-link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: fit-content;
+  height: 100%;
+}
+
+.sidebar__brand-link img {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+
+.sidebar__brand-link span {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+/* =========================
+   사이드바 메뉴
+========================= */
+.sidebar__nav-primary,
+.sidebar__nav-secondary {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar__nav-secondary {
+  margin-top: 49px;
+}
+
+.sidebar__nav-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+  height: 32px;
+  color: var(--text-secondary);
+}
+
+.sidebar__nav-item:hover {
+  color: var(--text-primary);
+}
+
+.sidebar__icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.sidebar__label {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 18px;
+  font-weight: var(--font-bold);
+  line-height: 23px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sidebar__divider {
+  flex-shrink: 0;
+  height: 1px;
+  margin: 24px 30px 0;
+  background: #282828;
+}
+
+/* =========================
+   플레이리스트
+========================= */
+.sidebar__playlist-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 20px;
+  min-width: 0;
+  min-height: 0;
+  padding: 24px 30px 40px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  color: var(--text-secondary);
+}
+
+.sidebar__playlist-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sidebar__playlist-item {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sidebar__playlist-row:hover .sidebar__playlist-item,
+.sidebar__playlist-item:hover {
+  color: var(--text-primary);
+}
+
+/* =========================
+   플레이리스트 점 3개 버튼
+========================= */
+.sidebar__playlist-more-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.sidebar__playlist-more-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.sidebar__playlist-row:hover .sidebar__playlist-more-button,
+.sidebar__playlist-more-button:focus,
+.sidebar__playlist-more-button:focus-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.sidebar__playlist-more-button span {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-primary);
+}
+
+/* =========================
+   더보기 메뉴
+========================= */
+.playlist-more-menu {
+  position: fixed;
+  z-index: 5000;
+  display: none;
+  width: 270px;
+  padding: 12px;
+  border-radius: 18px;
+  background: #333;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+}
+
+.playlist-more-menu.is-open {
+  display: block;
+}
+
+.playlist-more-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 11px 10px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.playlist-more-menu__item:hover {
+  background: #444;
+}
+
+.playlist-more-menu__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  color: currentColor;
+}
+
+.playlist-more-menu__item--delete {
+  color: #ff4d4d;
+}
+
+/* =========================
+   플레이리스트 모달
+========================= */
+.playlist-modal {
+  display: none;
+}
+
+.playlist-modal.is-open {
+  display: block;
+}
+
+.playlist-modal__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.playlist-modal__content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 1001;
+  width: 320px;
+  padding: 24px;
+  border-radius: 16px;
+  background: #181818;
+  transform: translate(-50%, -50%);
+}
+
+.playlist-modal__title {
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.playlist-modal__description {
+  margin-bottom: 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.playlist-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.playlist-modal__input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #242424;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.playlist-modal__input::placeholder {
+  color: #aaa;
+}
+
+.playlist-modal__input:focus {
+  border-color: var(--accent);
+}
+
+.playlist-modal__buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.playlist-modal__button {
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.playlist-modal__button--cancel {
+  color: #aaa;
+}
+
+.playlist-modal__button--cancel:hover {
+  color: var(--text-primary);
+}
+
+.playlist-modal__button--create,
+.playlist-modal__button--delete {
+  font-weight: var(--font-bold);
+}
+
+.playlist-modal__button--create {
+  background: var(--accent);
+}
+
+.playlist-modal__button--delete {
+  background: #e53935;
+  color: var(--text-primary);
+}
+
+/* =========================
+   태블릿 / 모바일 사이드바
+========================= */
+@media (max-width: 1024px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    z-index: 1000;
+    width: 280px;
+    max-width: 80vw;
+    height: 100dvh;
+    transition: left 0.25s ease;
+  }
+
+  .sidebar.is-open {
+    left: 0;
+  }
+
+  .sidebar__header {
+    padding: 0 22px;
+  }
+
+  .sidebar__brand {
+    height: 64px;
+    margin-bottom: 18px;
+  }
+
+  .sidebar__brand-link {
+    gap: 10px;
+  }
+
+  .sidebar__brand-link img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .sidebar__brand-link span {
+    font-size: 16px;
+  }
+
+  .sidebar__nav-primary,
+  .sidebar__nav-secondary {
+    gap: 18px;
+  }
+
+  .sidebar__nav-secondary {
+    margin-top: 40px;
+  }
+
+  .sidebar__nav-item {
+    gap: 14px;
+  }
+
+  .sidebar__icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .sidebar__label {
+    font-size: 16px;
+    line-height: 21px;
+  }
+
+  .sidebar__divider {
+    margin: 22px 22px 0;
+  }
+
+  .sidebar__playlist-list {
+    gap: 18px;
+    padding: 22px 22px 36px;
+  }
+
+  .playlist-more-menu {
+    width: 240px;
+  }
+
+  .playlist-more-menu__item {
+    font-size: 15px;
+  }
+}
+
+/* =========================
+   사이드바 닫기 버튼
+========================= */
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sidebar__close-button {
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+
+  color: var(--text-secondary);
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.sidebar__close-button:hover {
+  background: #282828;
+  color: var(--text-primary);
+}
+
+@media (max-width: 1024px) {
+  .sidebar__close-button {
+    display: inline-flex;
+  }
+}
+
+/* =========================
+   플레이리스트 모달 반응형
+========================= */
+@media (max-width: 480px) {
+  .playlist-modal__content {
+    width: calc(100% - 32px);
+    max-width: 320px;
+    padding: 20px;
+  }
+
+  .playlist-modal__title {
+    font-size: 18px;
+  }
+
+  .playlist-modal__buttons {
+    flex-direction: column-reverse;
+  }
+
+  .playlist-modal__button {
+    width: 100%;
+  }
+
+  .playlist-more-menu {
+    width: min(270px, calc(100vw - 24px));
+  }
+}
