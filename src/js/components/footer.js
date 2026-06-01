@@ -1080,7 +1080,7 @@ function createSpotifyPlayer() {
       albumImage: currentTrack.album?.images?.[0]?.url || "",
       duration: state.duration,
     };
-    isLiked();
+
     isPlaying = !state.paused;
     updatePlayButtonIcon();
 
@@ -1088,6 +1088,10 @@ function createSpotifyPlayer() {
 
     updateCurrentTrackUI(currentSpotifyTrack);
     updateProgressUI(state.position, state.duration);
+
+    setTimeout(() => {
+      isLiked();
+    }, 100);
 
     if (isPlaying) {
       startProgressTimer();
@@ -1341,9 +1345,10 @@ export function renderFooter() {
   `;
 }
 
-async function isLiked() {
+export async function isLiked() {
   const likeButton = document.querySelector("#likeButton img");
-  console.log("isliked 트랙 아이디", currentTrackId);
+  if (!currentTrackId) return;
+
   const res = await fetch(`${API_BASE_URL}/api/islike`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -1396,6 +1401,7 @@ function initFooterEvents() {
           alert("좋아요가 반영되었습니다.");
           // 필요시 버튼 아이콘을 Heart_Fill에서 Heart_Outline 등으로 교체하는 로직 추가
           isLiked();
+          window.dispatchEvent(new Event("likeChanged"));
         } else {
           alert("좋아요 처리에 실패했습니다.");
         }

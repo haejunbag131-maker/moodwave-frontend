@@ -1,4 +1,4 @@
-import { getSpotifyAccessToken } from "../components/footer.js";
+import { getSpotifyAccessToken, isLiked } from "../components/footer.js";
 import { renderSongTable } from "../components/songTable.js";
 
 const API_BASE_URL = "http://127.0.0.1:8080";
@@ -61,19 +61,16 @@ async function loadLikedTracks() {
 // 좋아요 취소
 // =========================
 async function removeLike(musicId) {
-  const response = await fetch(`${API_BASE_URL}/api/like`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      musicId,
-    }),
+  console.log("musicId:", musicId);
+  const response = await fetch(`${API_BASE_URL}/api/like/${musicId}`, {
+    method: "DELETE",
     credentials: "include",
   });
 
   if (!response.ok) {
     throw new Error("좋아요 삭제 실패");
+  } else {
+    isLiked();
   }
 }
 
@@ -107,12 +104,5 @@ export function initLikedPage() {
       alert("좋아요 삭제에 실패했습니다.");
     }
   });
-
-  const likeButton = document.querySelector("#likeButton");
-  likeButton.addEventListener("click", async (e) => {
-    if (!likeButton) return;
-
-    console.log("푸터좋아요 반영해서 재로드");
-    loadLikedTracks();
-  });
+  window.addEventListener("likeChanged", loadLikedTracks);
 }
