@@ -36,25 +36,20 @@ function escapeHTML(value = "") {
 }
 
 // =========================
-// 플레이리스트 목록 카드 생성 함수
+// 플레이리스트 목록 행 생성 함수
 // =========================
-function createPlaylistCard(playlistName) {
+function createPlaylistRow(playlistName) {
   return `
-    <a
-      href="#/playlist?name=${encodeURIComponent(playlistName)}"
-      class="playlist-card"
-    >
-      <div class="playlist-card__cover">
-        <img src="/assets/icon/Library_S.svg" alt="" />
-      </div>
-
-      <div class="playlist-card__info">
-        <strong class="playlist-card__title">
+    <tr>
+      <td colspan="5">
+        <a
+          href="#/playlist?name=${encodeURIComponent(playlistName)}"
+          class="song-table__link"
+        >
           ${escapeHTML(playlistName)}
-        </strong>
-        <span class="playlist-card__desc">Playlist</span>
-      </div>
-    </a>
+        </a>
+      </td>
+    </tr>
   `;
 }
 
@@ -63,7 +58,7 @@ function createPlaylistCard(playlistName) {
 // =========================
 export function renderPlaylistPage() {
   return `
-    <section class="playlist-page">
+    <section class="song-table-page">
       <div id="playlistPageContent"></div>
     </section>
   `;
@@ -78,25 +73,35 @@ function renderPlaylistOverview() {
 
   if (!content) return;
 
-  if (playlistNames.length === 0) {
-    content.innerHTML = `
-      <div class="playlist-page__empty">
-        <h2>플레이리스트가 없습니다.</h2>
-        <p>사이드바에서 Create Playlist를 눌러 플레이리스트를 만들어보세요.</p>
-      </div>
-    `;
-    return;
-  }
-
   content.innerHTML = `
-    <div class="playlist-page__header">
-      <h2 class="playlist-page__title">Your Playlists</h2>
-      <p class="playlist-page__desc">생성한 플레이리스트를 확인해보세요.</p>
+    <div class="song-table-page__header">
+      <h2 class="song-table-page__title">Your Playlists</h2>
+      <p class="song-table-page__desc">
+        생성한 플레이리스트를 확인해보세요.
+      </p>
     </div>
 
-    <div class="playlist-card-grid">
-      ${playlistNames.map(createPlaylistCard).join("")}
-    </div>
+    <table class="song-table">
+      <thead>
+        <tr>
+          <th colspan="5">Playlist</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        ${
+          playlistNames.length === 0
+            ? `
+              <tr>
+                <td colspan="5" class="song-table__empty">
+                  생성한 플레이리스트가 없습니다.
+                </td>
+              </tr>
+            `
+            : playlistNames.map(createPlaylistRow).join("")
+        }
+      </tbody>
+    </table>
   `;
 }
 
@@ -115,20 +120,14 @@ function renderPlaylistDetail(playlistName) {
     return;
   }
 
-  if (tracks.length === 0) {
-    content.innerHTML = `
-      <div class="playlist-page__header">
-        <h2 class="playlist-page__title">${escapeHTML(playlistName)}</h2>
-        <p class="playlist-page__desc">아직 추가된 곡이 없습니다.</p>
-      </div>
-    `;
-    return;
-  }
-
   content.innerHTML = `
-    <div class="playlist-page__header">
-      <h2 class="playlist-page__title">${escapeHTML(playlistName)}</h2>
-      <p class="playlist-page__desc">${tracks.length}곡</p>
+    <div class="song-table-page__header">
+      <h2 class="song-table-page__title">
+        ${escapeHTML(playlistName)}
+      </h2>
+      <p class="song-table-page__desc">
+        ${tracks.length > 0 ? `${tracks.length}곡` : "아직 추가된 곡이 없습니다."}
+      </p>
     </div>
 
     ${renderSongTable(tracks, {
