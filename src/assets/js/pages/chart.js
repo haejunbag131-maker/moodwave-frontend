@@ -1,5 +1,10 @@
 import { API_ENDPOINTS } from "../api/api.js";
 import { renderSongTable, initSongTable } from "../components/songTable.js";
+import {
+  renderLoading,
+  setLoading,
+  setContentVisible,
+} from "../components/loading.js";
 
 // =========================
 // 아티스트별 장르 매핑
@@ -78,7 +83,9 @@ export function renderChartPage() {
         </p>
       </div>
 
-      <div class="dashboard">
+      ${renderChartSkeleton()}
+
+      <div id="chartDashboard" class="dashboard" hidden>
         <div class="chart-box">
           <h3>장르별 재생 비율</h3>
 
@@ -104,9 +111,37 @@ export function renderChartPage() {
           </p>
         </div>
 
-        <div id="chartSongTable"></div>
+        ${renderLoading("chartRecommendLoading", "추천곡을 불러오는 중...")}
+
+        <div id="chartSongTable" hidden></div>
       </section>
     </section>
+  `;
+}
+
+function renderChartSkeleton() {
+  return `
+    <div id="chartSkeleton" class="dashboard chart-skeleton">
+      <div class="chart-box chart-skeleton__box">
+        <div class="skeleton skeleton-line skeleton-line--title"></div>
+
+        <div class="chart-container chart-skeleton__container">
+          <div class="skeleton skeleton-doughnut"></div>
+        </div>
+      </div>
+
+      <div class="chart-box chart-skeleton__box">
+        <div class="skeleton skeleton-line skeleton-line--title"></div>
+
+        <div class="chart-container weather-container chart-skeleton__container">
+          <div class="skeleton skeleton-bar skeleton-bar--1"></div>
+          <div class="skeleton skeleton-bar skeleton-bar--2"></div>
+          <div class="skeleton skeleton-bar skeleton-bar--3"></div>
+          <div class="skeleton skeleton-bar skeleton-bar--4"></div>
+          <div class="skeleton skeleton-bar skeleton-bar--5"></div>
+        </div>
+      </div>
+    </div>
   `;
 }
 
@@ -115,6 +150,12 @@ export function renderChartPage() {
 // =========================
 export async function initChartPage() {
   const songTableContainer = document.querySelector("#chartSongTable");
+
+  setContentVisible("chartSkeleton", true);
+  setContentVisible("chartDashboard", false);
+
+  setLoading("chartRecommendLoading", true);
+  setContentVisible("chartSongTable", false);
 
   try {
     const response = await fetch(API_ENDPOINTS.music);
@@ -137,6 +178,9 @@ export async function initChartPage() {
       .slice(0, 10)
       .map(normalizeSongData);
 
+    setContentVisible("chartSkeleton", false);
+    setContentVisible("chartDashboard", true);
+
     renderGenreChart(topGenres);
     renderWeatherChart(topWeather);
 
@@ -152,6 +196,9 @@ export async function initChartPage() {
   } catch (error) {
     console.error("차트 페이지 초기화 실패:", error);
 
+    setContentVisible("chartSkeleton", false);
+    setContentVisible("chartDashboard", true);
+
     renderGenreChart([]);
     renderWeatherChart([]);
 
@@ -162,6 +209,9 @@ export async function initChartPage() {
         </div>
       `;
     }
+  } finally {
+    setLoading("chartRecommendLoading", false);
+    setContentVisible("chartSongTable", true);
   }
 }
 
