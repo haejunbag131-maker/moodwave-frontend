@@ -1,5 +1,50 @@
+import { API_ENDPOINTS } from "../api.js";
 import { renderSongTable, initSongTable } from "../components/songTable.js";
-import { weatherTracks, playlistMap } from "../data.js";
+
+// =========================
+// 아티스트별 장르 매핑
+// Spotify API 응답에 genre가 없어서 프론트에서 수동 보정
+// =========================
+const artistGenreMap = {
+  "D.O.": "K-pop",
+  CORTIS: "K-pop",
+  "NCT WISH": "K-pop",
+  "The Weeknd": "Pop",
+  HANRORO: "Indie",
+  "Playboi Carti": "Hip-hop",
+  DaBaby: "Hip-hop",
+  "Yerin Baek": "R&B",
+  "Omega Sapien": "Hip-hop",
+  NAYEON: "K-pop",
+  Hearts2Hearts: "K-pop",
+  ILLIT: "K-pop",
+  B小町: "J-pop",
+  "Pop Smoke": "Hip-hop",
+  "Ariana Grande": "Pop",
+  "DJ Khaled": "Hip-hop",
+  AKMU: "K-pop",
+  BTS: "K-pop",
+  OsamaSon: "Hip-hop",
+  "Gen Hoshino": "J-pop",
+  NOWIMYOUNG: "Hip-hop",
+  "K/DA": "K-pop",
+  MIKA: "Pop",
+  BewhY: "Hip-hop",
+  "Kenshi Yonezu": "J-pop",
+  "N'John": "Hip-hop",
+  NMIXX: "K-pop",
+  BLASÉ: "Hip-hop",
+  Jin: "K-pop",
+  KiiiKiii: "K-pop",
+  HAON: "Hip-hop",
+  LamazeP: "J-pop",
+  STAYC: "K-pop",
+  YENA: "K-pop",
+  "Epik High": "Hip-hop",
+  "Polo G": "Hip-hop",
+  "Dragon Pony": "K-rock",
+  kinoshita: "J-pop",
+};
 
 // =========================
 // 차트 페이지 HTML 렌더링
@@ -48,88 +93,64 @@ export function renderChartPage() {
 
 // =========================
 // 차트 페이지 초기화
-// data.js 더미 데이터 사용 버전
 // =========================
 export async function initChartPage() {
   const songTableContainer = document.querySelector("#chartSongTable");
 
-  const data = getDummyChartData();
+  try {
+    const response = await fetch(API_ENDPOINTS.music);
 
-  const topGenres = getTopDataByField(data, "genre");
-  const topWeather = getTopDataByField(data, "weather");
+    if (!response.ok) {
+      throw new Error("음악 데이터 조회 실패");
+    }
 
-  const mostListenedWeather = topWeather[0]?.[0];
+    const apiData = await response.json();
 
-  const recommendedSongs = data
-    .filter(
-      (song) => normalizeText(song?.weather, "Unknown") === mostListenedWeather,
-    )
-    .slice(0, 5)
-    .map(normalizeSongData);
-
-  renderGenreChart(topGenres);
-  renderWeatherChart(topWeather);
-
-  if (songTableContainer) {
-    songTableContainer.innerHTML = renderSongTable(recommendedSongs, {
-      actionType: "playlist",
-      actionHeader: "Add",
-      emptyMessage: "추천할 곡이 없습니다.",
-    });
-  }
-
-  initSongTable();
-}
-
-// =========================
-// data.js의 weatherTracks를 차트용 데이터로 변환
-// =========================
-function getDummyChartData() {
-  return Object.entries(weatherTracks).flatMap(([weatherKey, tracks]) => {
-    const playlist = playlistMap[weatherKey];
-
-    return tracks.map((track) => ({
-      id: `${weatherKey}-${track.id}`,
-      title: track.title,
-      artist: track.artist,
-      weather: playlist?.weather || weatherKey,
-      genre: getPrimaryGenre(playlist?.genre),
-      releaseDate: playlist?.weather || weatherKey,
-      durationMs: convertDurationToMs(track.duration),
-      cover: playlist?.image || "",
-      imageUrl: playlist?.image || "",
-      albumImage: playlist?.image || "",
+    const data = apiData.map((song) => ({
+      ...song,
+      genre: song.genre || artistGenreMap[song.artist] || "Etc",
+      weather: song.weather || "Unknown",
     }));
-  });
-}
 
-// =========================
-// 장르 문자열에서 첫 번째 장르만 사용
-// 예: "Lo-fi • Jazz • Acoustic" → "Lo-fi"
-// =========================
-function getPrimaryGenre(genreText) {
-  if (!genreText || typeof genreText !== "string") {
-    return "Etc";
+    const topGenres = getTopDataByField(data, "genre");
+    const topWeather = getTopDataByField(data, "weather");
+
+    const mostListenedWeather = topWeather[0]?.[0];
+
+    const recommendedSongs = data
+      .filter(
+        (song) =>
+          normalizeText(song?.weather, "Unknown") === mostListenedWeather,
+      )
+      .slice(0, 5)
+      .map(normalizeSongData);
+
+    renderGenreChart(topGenres);
+    renderWeatherChart(topWeather);
+
+    if (songTableContainer) {
+      songTableContainer.innerHTML = renderSongTable(recommendedSongs, {
+        actionType: "playlist",
+        actionHeader: "Add",
+        emptyMessage: "추천할 곡이 없습니다.",
+      });
+    }
+
+    initSongTable();
+  } catch (error) {
+    console.error("차트 페이지 초기화 실패:", error);
+
+    renderGenreChart([]);
+    renderWeatherChart([]);
+
+    if (songTableContainer) {
+      songTableContainer.innerHTML = `
+        <div class="empty-message">
+          음악 데이터를 불러오지 못했습니다.
+        </div>
+      `;
+    }
   }
-
-  return genreText.split("•")[0].trim() || "Etc";
-}
-
-// =========================
-// "4:12" 형식의 duration을 ms로 변환
-// =========================
-function convertDurationToMs(duration) {
-  if (!duration || typeof duration !== "string") {
-    return 0;
-  }
-
-  const [minutes, seconds] = duration.split(":").map(Number);
-
-  if (!Number.isFinite(minutes) || !Number.isFinite(seconds)) {
-    return 0;
-  }
-
-  return (minutes * 60 + seconds) * 1000;
 }
 
 // =========================
@@ -222,7 +243,6 @@ function renderGenreChart(topGenres) {
 
       ctx.font = "16px sans-serif";
       ctx.fillText(`${percentage}%`, width / 2 + left, height / 2 + top + 15);
-
       ctx.restore();
     },
   };

@@ -12,6 +12,7 @@ export const LIKE_API_URL = `${API_BASE_URL}/api/like`;
 export const LATEST_API_URL = `${API_BASE_URL}/api/latest`;
 export const POPULAR_API_URL = `${API_BASE_URL}/api/popular`;
 export const EMOTION_RECOMMEND_API_URL = `${API_BASE_URL}/api/emotion/recommend`;
+export const MUSIC_API_URL = `${API_BASE_URL}/api/music`;
 
 export const USER_API_URL = `${API_BASE_URL}/api/user`;
 export const SPOTIFY_LOGIN_API_URL = `${API_BASE_URL}/oauth2/authorization/spotify`;
@@ -35,6 +36,7 @@ export const API_ENDPOINTS = {
   latest: LATEST_API_URL,
   popular: POPULAR_API_URL,
   emotionRecommend: EMOTION_RECOMMEND_API_URL,
+  music: MUSIC_API_URL,
 
   user: USER_API_URL,
   spotifyLogin: SPOTIFY_LOGIN_API_URL,
