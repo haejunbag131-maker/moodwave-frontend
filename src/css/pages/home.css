@@ -148,18 +148,21 @@
   gap: 24px;
   width: 100%;
   min-width: 0;
+  justify-content: start;
 }
 
 #popularGrid,
 #latestGrid {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  --home-card-width: 235px;
+  grid-template-columns: repeat(5, var(--home-card-width));
 }
 
 .grid-card {
   display: flex;
   flex-direction: column;
-  min-width: 0;
-  min-height: 324px;
+  width: var(--home-card-width);
+  min-width: var(--home-card-width);
+  min-height: 270px;
   gap: 20px;
   padding: 20px 21px 21px;
   overflow: hidden;
@@ -330,8 +333,8 @@
    반응형
 ========================= */
 
-/* 중간 화면: Ureca's Pick 6개 → 4개, Popular/Latest 5개 → 4개 */
-@media (max-width: 1280px) {
+/* 1025px ~ 1280px: 카드 크기는 고정, 개수만 5개 → 4개 */
+@media (max-width: 1280px) and (min-width: 1025px) {
   .mid-mixes {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -342,7 +345,7 @@
 
   #popularGrid,
   #latestGrid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(4, var(--home-card-width));
   }
 
   #popularGrid .grid-card:nth-child(n + 5),
@@ -351,20 +354,67 @@
   }
 }
 
-/* 태블릿: Popular/Latest 4개 → 3개 */
+/* =========================
+   1024px 이하:
+   사이드바 사라지는 시점부터 중앙 정렬 + 가로 슬라이드
+========================= */
 @media (max-width: 1024px) {
   .main {
+    align-items: center;
     gap: 42px;
-    padding: 28px 36px 120px;
+    padding: 28px 24px 120px;
   }
 
+  .main > * {
+    width: 100%;
+    max-width: 760px;
+  }
+
+  .main__greeting {
+    font-size: 32px;
+  }
+
+  /* Ureca's Pick 가로 슬라이드 */
   .mid-mixes {
+    display: flex;
+    align-items: stretch;
     gap: 14px;
+
+    width: 100%;
+    min-width: 0;
+    height: 76px;
+    min-height: 76px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
+
+    padding-bottom: 0;
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .mid-mixes::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mid-mixes .mid-mix:nth-child(n + 5) {
+    display: flex;
   }
 
   .mid-mix {
+    flex: 0 0 360px;
+    width: 360px;
+    min-width: 360px;
     height: 76px;
+    min-height: 76px;
     gap: 16px;
+    scroll-snap-align: start;
   }
 
   .mid-mix__cover {
@@ -377,43 +427,84 @@
     line-height: 23px;
   }
 
+  .mid-mix__play {
+    display: none;
+  }
+
+  .section {
+    gap: 22px;
+  }
+
+  .section__header {
+    padding: 0 2px;
+  }
+
+  .section__title {
+    font-size: 28px;
+    line-height: 34px;
+  }
+
+  .section__see-all {
+    font-size: 13px;
+    line-height: 18px;
+    letter-spacing: 1px;
+  }
+
+  /* Popular / Latest 가로 슬라이드 */
   .section__grid {
-    gap: 20px;
+    display: flex;
+    justify-content: flex-start;
+    gap: 18px;
+
+    width: 100%;
+    min-width: 0;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
+
+    padding-bottom: 8px;
+
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 
-  .grid-card {
-    min-height: 300px;
-    padding: 18px;
-    gap: 16px;
-  }
-
-  .grid-card__name {
-    font-size: 18px;
-    line-height: 23px;
-  }
-
-  .grid-card__desc {
-    font-size: 16px;
-    line-height: 21px;
+  .section__grid::-webkit-scrollbar {
+    display: none;
   }
 
   #popularGrid,
   #latestGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: none;
   }
 
-  #popularGrid .grid-card:nth-child(n + 4),
-  #latestGrid .grid-card:nth-child(n + 4) {
+  #popularGrid .grid-card,
+  #latestGrid .grid-card {
+    display: flex;
+  }
+
+  .grid-card {
+    flex: 0 0 190px;
+    width: 190px;
+    min-width: 190px;
+    scroll-snap-align: start;
+  }
+
+  .grid-card__play {
     display: none;
   }
 }
 
-/* 모바일: Ureca's Pick은 2개씩 보이는 가로 스크롤 */
+/* 모바일: 카드 크기는 구간별로만 변경, 실시간으로 줄어들지 않음 */
 @media (max-width: 600px) {
   .main {
     align-items: stretch;
     gap: 36px;
-    padding: 24px 22px 116px;
+    padding: 24px 20px 116px;
   }
 
   .main > * {
@@ -425,34 +516,19 @@
   }
 
   .mid-mixes {
-    display: flex;
-    flex-shrink: 0;
     gap: 12px;
-    width: 100%;
-    min-width: 0;
     height: 68px;
     min-height: 68px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  .mid-mixes::-webkit-scrollbar {
-    display: none;
   }
 
   .mid-mix {
-    flex: 0 0 calc((100% - 12px) / 2);
-    width: calc((100% - 12px) / 2);
-    min-width: 0;
+    flex: 0 0 280px;
+    width: 280px;
+    min-width: 280px;
     height: 68px;
     min-height: 68px;
     gap: 12px;
     border-radius: 8px;
-    scroll-snap-align: start;
   }
 
   .mid-mix__cover {
@@ -465,10 +541,6 @@
     line-height: 21px;
   }
 
-  .mid-mix__play {
-    display: none;
-  }
-
   .section {
     gap: 18px;
   }
@@ -478,44 +550,35 @@
     line-height: 30px;
   }
 
-  .section__see-all {
-    font-size: 13px;
-    line-height: 18px;
-    letter-spacing: 1px;
-  }
-
   .section__grid {
-    gap: 12px;
+    gap: 14px;
   }
 
   .grid-card {
-    min-height: auto;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 8px;
+    flex: 0 0 170px;
+    width: 170px;
+    min-width: 170px;
+    min-height: 240px;
+    gap: 16px;
+    padding: 16px;
   }
 
   .grid-card__name {
-    font-size: 14px;
-    line-height: 19px;
+    font-size: 17px;
+    line-height: 22px;
   }
 
   .grid-card__desc {
-    font-size: 12px;
-    line-height: 17px;
-    -webkit-line-clamp: 2;
-  }
-
-  .grid-card__play {
-    display: none;
+    font-size: 15px;
+    line-height: 20px;
   }
 }
 
-/* 작은 모바일: 480px 아래부터 Popular/Latest 3개 → 2개 */
-@media (max-width: 479px) {
+/* 작은 모바일 */
+@media (max-width: 420px) {
   .main {
     gap: 32px;
-    padding: 22px 18px 104px;
+    padding: 22px 16px 104px;
   }
 
   .main__greeting {
@@ -529,8 +592,9 @@
   }
 
   .mid-mix {
-    flex: 0 0 100%;
-    width: 100%;
+    flex: 0 0 260px;
+    width: 260px;
+    min-width: 260px;
     height: 64px;
     min-height: 64px;
     gap: 10px;
@@ -546,26 +610,11 @@
     line-height: 20px;
   }
 
-  #popularGrid,
-  #latestGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  #popularGrid .grid-card:nth-child(n + 3),
-  #latestGrid .grid-card:nth-child(n + 3) {
-    display: none;
-  }
-}
-
-/* 아주 좁은 화면: Popular/Latest 2개 → 1개 */
-@media (max-width: 360px) {
-  #popularGrid,
-  #latestGrid {
-    grid-template-columns: 1fr;
-  }
-
-  #popularGrid .grid-card:nth-child(n + 2),
-  #latestGrid .grid-card:nth-child(n + 2) {
-    display: none;
+  .grid-card {
+    flex: 0 0 160px;
+    width: 160px;
+    min-width: 160px;
+    min-height: 230px;
+    padding: 15px;
   }
 }

@@ -1,4 +1,9 @@
-import { playlistMap } from '../data.js';
+import { playlistMap } from "../data.js";
+import {
+  renderLoading,
+  setLoading,
+  setContentVisible,
+} from "../components/loading.js";
 
 const WEATHER_API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
@@ -11,12 +16,9 @@ export function renderWeatherPage() {
     <section class="weather-hero">
       <p class="section-label">CURRENT WEATHER</p>
 
-      <div id="weatherLoading" class="loading">
-        <div class="loading__spinner"></div>
-        <span>현재 날씨 확인 중...</span>
-      </div>
+      ${renderLoading("weatherLoading", "현재 날씨 확인 중...")}
 
-  <div id="weatherContent" class="weather-hero-content" hidden>
+      <div id="weatherContent" class="weather-hero-content" hidden>
         <div class="weather-info-box">
           <div class="weather-heading">
             <img
@@ -41,15 +43,15 @@ export function renderWeatherPage() {
     <section class="featured-playlist">
       <p class="section-label">TODAY'S PLAYLIST</p>
 
-    <div id="featuredSkeleton" class="featured-card">
-      <div class="playlist-album skeleton"></div>
-      <div class="featured-playlist-info">
-        <div class="playlist-tag-skeleton skeleton"></div>
-        <div class="playlist-title-skeleton skeleton"></div>
-        <div class="playlist-genre-skeleton skeleton"></div>
-        <div class="playlist-desc-skeleton skeleton"></div>
+      <div id="featuredSkeleton" class="featured-card">
+        <div class="playlist-album skeleton"></div>
+        <div class="featured-playlist-info">
+          <div class="playlist-tag-skeleton skeleton"></div>
+          <div class="playlist-title-skeleton skeleton"></div>
+          <div class="playlist-genre-skeleton skeleton"></div>
+          <div class="playlist-desc-skeleton skeleton"></div>
+        </div>
       </div>
-    </div>
 
       <a class="featured-card" id="featuredCard" hidden>
         <div class="playlist-album" id="playlistAlbum">
@@ -100,8 +102,8 @@ export function renderWeatherPage() {
           <div class="other-weather-img skeleton"></div>
 
           <div class="weather-card-content">
-           <div class="weather-card-title-skeleton skeleton"></div>
-           <div class="weather-card-desc-skeleton skeleton"></div>
+            <div class="weather-card-title-skeleton skeleton"></div>
+            <div class="weather-card-desc-skeleton skeleton"></div>
           </div>
         </div>
 
@@ -123,7 +125,7 @@ export function renderWeatherPage() {
           </div>
         </div>
       </div>
-      
+
       <div id="weatherCardGrid" class="weather-card-grid" hidden></div>
     </section>
   `;
@@ -133,24 +135,19 @@ export function renderWeatherPage() {
 // Weather 페이지 초기화
 // =========================
 export function initWeatherPage() {
-  const weatherCardGrid = document.querySelector('#weatherCardGrid');
+  const weatherCardGrid = document.querySelector("#weatherCardGrid");
 
-  const weatherLoading = document.querySelector('#weatherLoading');
-  const weatherContent = document.querySelector('#weatherContent');
-  const featuredSkeleton = document.querySelector('#featuredSkeleton');
-  const weatherCardsSkeleton = document.querySelector('#weatherCardsSkeleton');
+  const weatherIcon = document.querySelector("#weatherIcon");
+  const weatherTitle = document.querySelector("#weatherTitle");
+  const weatherInfo = document.querySelector("#weatherInfo");
+  const weatherDesc = document.querySelector("#weatherDesc");
 
-  const weatherIcon = document.querySelector('#weatherIcon');
-  const weatherTitle = document.querySelector('#weatherTitle');
-  const weatherInfo = document.querySelector('#weatherInfo');
-  const weatherDesc = document.querySelector('#weatherDesc');
-
-  const featuredCard = document.querySelector('#featuredCard');
-  const playlistTag = document.querySelector('#playlistTag');
-  const playlistTitle = document.querySelector('#playlistTitle');
-  const playlistGenre = document.querySelector('#playlistGenre');
-  const playlistDesc = document.querySelector('#playlistDesc');
-  const playlistAlbumImg = document.querySelector('#playlistAlbumImg');
+  const featuredCard = document.querySelector("#featuredCard");
+  const playlistTag = document.querySelector("#playlistTag");
+  const playlistTitle = document.querySelector("#playlistTitle");
+  const playlistGenre = document.querySelector("#playlistGenre");
+  const playlistDesc = document.querySelector("#playlistDesc");
+  const playlistAlbumImg = document.querySelector("#playlistAlbumImg");
 
   if (
     !weatherCardGrid ||
@@ -168,6 +165,8 @@ export function initWeatherPage() {
     return;
   }
 
+  setWeatherPageLoaded(false);
+
   getCurrentLocation();
   initWeatherCardDrag(weatherCardGrid);
 
@@ -183,7 +182,7 @@ export function initWeatherPage() {
         getWeather(lat, lon);
       },
       () => {
-        console.log('위치 정보를 가져올 수 없어 서울 날씨로 대체합니다.');
+        console.log("위치 정보를 가져올 수 없어 서울 날씨로 대체합니다.");
 
         getWeather(37.5665, 126.978);
       },
@@ -195,7 +194,8 @@ export function initWeatherPage() {
   // =========================
   async function getWeather(lat, lon) {
     if (!WEATHER_API_KEY) {
-      console.error('VITE_WEATHER_API_KEY가 설정되지 않았습니다.');
+      console.error("VITE_WEATHER_API_KEY가 설정되지 않았습니다.");
+      setLoading("weatherLoading", false);
       return;
     }
 
@@ -205,7 +205,7 @@ export function initWeatherPage() {
       const response = await fetch(url);
 
       if (!response.ok) {
-        throw new Error('날씨 정보를 불러오지 못했습니다.');
+        throw new Error("날씨 정보를 불러오지 못했습니다.");
       }
 
       const data = await response.json();
@@ -216,19 +216,28 @@ export function initWeatherPage() {
 
       weatherInfo.textContent = `${temp}°C · ${city}`;
 
-      weatherLoading.hidden = true;
-      weatherContent.hidden = false;
-      featuredSkeleton.hidden = true;
-      featuredCard.hidden = false;
-      weatherCardsSkeleton.hidden = true;
-      weatherCardGrid.hidden = false;
-
       updateWeather(weather);
       updatePlaylist(weather);
       renderWeatherCards(weather);
+
+      setWeatherPageLoaded(true);
     } catch (error) {
       console.error(error);
+      setLoading("weatherLoading", false);
     }
+  }
+
+  // =========================
+  // 로딩 / 콘텐츠 표시 전환
+  // =========================
+  function setWeatherPageLoaded(isLoaded) {
+    setLoading("weatherLoading", !isLoaded);
+
+    setContentVisible("weatherContent", isLoaded);
+    setContentVisible("featuredSkeleton", !isLoaded);
+    setContentVisible("featuredCard", isLoaded);
+    setContentVisible("weatherCardsSkeleton", !isLoaded);
+    setContentVisible("weatherCardGrid", isLoaded);
   }
 
   // =========================
@@ -236,17 +245,17 @@ export function initWeatherPage() {
   // =========================
   function normalizeWeather(weather) {
     if (
-      weather === 'Mist' ||
-      weather === 'Fog' ||
-      weather === 'Haze' ||
-      weather === 'Smoke' ||
-      weather === 'Dust' ||
-      weather === 'Sand' ||
-      weather === 'Ash' ||
-      weather === 'Squall' ||
-      weather === 'Tornado'
+      weather === "Mist" ||
+      weather === "Fog" ||
+      weather === "Haze" ||
+      weather === "Smoke" ||
+      weather === "Dust" ||
+      weather === "Sand" ||
+      weather === "Ash" ||
+      weather === "Squall" ||
+      weather === "Tornado"
     ) {
-      return 'Foggy';
+      return "Foggy";
     }
 
     return weather;
@@ -261,7 +270,7 @@ export function initWeatherPage() {
     }
 
     if (playlistMap.Foggy) {
-      return 'Foggy';
+      return "Foggy";
     }
 
     return Object.keys(playlistMap)[0];
@@ -297,7 +306,7 @@ export function initWeatherPage() {
     playlistAlbumImg.style.backgroundImage = `url(${playlist.image})`;
 
     featuredCard.href = `#/weather-playlist?playlist=${weatherKey}`;
-    featuredCard.style.setProperty('--playlist-color', playlist.color);
+    featuredCard.style.setProperty("--playlist-color", playlist.color);
   }
 
   // =========================
@@ -306,13 +315,13 @@ export function initWeatherPage() {
   function renderWeatherCards(currentWeather) {
     const currentWeatherKey = getWeatherKey(currentWeather);
 
-    weatherCardGrid.innerHTML = '';
+    weatherCardGrid.innerHTML = "";
 
     Object.entries(playlistMap).forEach(([weather, playlist]) => {
       if (weather === currentWeatherKey) return;
 
-      const card = document.createElement('a');
-      card.className = 'weather-card';
+      const card = document.createElement("a");
+      card.className = "weather-card";
       card.href = `#/weather-playlist?playlist=${weather}`;
 
       card.innerHTML = `
@@ -354,21 +363,21 @@ function initWeatherCardDrag(weatherCardGrid) {
   let startX = 0;
   let scrollLeft = 0;
 
-  weatherCardGrid.addEventListener('mousedown', (e) => {
+  weatherCardGrid.addEventListener("mousedown", (e) => {
     isDown = true;
     startX = e.pageX - weatherCardGrid.offsetLeft;
     scrollLeft = weatherCardGrid.scrollLeft;
   });
 
-  weatherCardGrid.addEventListener('mouseleave', () => {
+  weatherCardGrid.addEventListener("mouseleave", () => {
     isDown = false;
   });
 
-  weatherCardGrid.addEventListener('mouseup', () => {
+  weatherCardGrid.addEventListener("mouseup", () => {
     isDown = false;
   });
 
-  weatherCardGrid.addEventListener('mousemove', (e) => {
+  weatherCardGrid.addEventListener("mousemove", (e) => {
     if (!isDown) return;
 
     e.preventDefault();

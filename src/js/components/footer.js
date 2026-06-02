@@ -18,6 +18,16 @@ const EMPTY_TRACK = {
 };
 
 // =========================
+// 플레이어 아이콘 경로
+// =========================
+const PLAYER_ICONS = {
+  volume: "/assets/icon/Volume_XS.svg",
+  volumeMuted: "/assets/icon/Muted_XS.svg",
+  fullscreen: "/assets/icon/FullScreen_S.svg",
+  fullscreenExit: "/assets/icon/Minimize_S.svg",
+};
+
+// =========================
 // 테스트 재생 목록
 // =========================
 const testTrackUris = [
@@ -37,6 +47,11 @@ let isTrackCardEventBound = false;
 let isPlayerPopoverEventBound = false;
 let currentTrackId = null;
 let currentTrackInfo = null;
+let coverImageLoadId = 0;
+
+let pendingTrackId = null;
+let pendingTrackStartedAt = 0;
+const PENDING_TRACK_LOCK_MS = 4000;
 
 let isShuffleOn = false;
 let repeatMode = "off";
@@ -58,7 +73,6 @@ export async function getSpotifyAccessToken() {
       credentials: "include",
     });
 
-    // 로그인 안 된 상태는 에러가 아니라 null 처리
     if (response.status === 401) {
       console.warn("Spotify 로그인이 필요합니다.");
       spotifyAccessToken = null;
@@ -222,6 +236,51 @@ function getPlayableTrackUri(track) {
 }
 
 // =========================
+// Spotify URI에서 트랙 ID 추출
+// =========================
+function getSpotifyTrackIdFromUri(uri = "") {
+  const spotifyTrackPrefix = "spotify:track:";
+
+  if (!uri.startsWith(spotifyTrackPrefix)) {
+    return "";
+  }
+
+  return uri.replace(spotifyTrackPrefix, "");
+}
+
+// =========================
+// 새로 클릭한 곡 상태 저장
+// =========================
+function setPendingTrack(track, uri) {
+  pendingTrackId = track.id || getSpotifyTrackIdFromUri(uri);
+  pendingTrackStartedAt = Date.now();
+}
+
+// =========================
+// 새 곡 대기 상태 초기화
+// =========================
+function clearPendingTrack() {
+  pendingTrackId = null;
+  pendingTrackStartedAt = 0;
+}
+
+// =========================
+// 새 곡으로 바뀌는 중인지 확인
+// =========================
+function isWaitingForPendingTrack(spotifyTrackId) {
+  if (!pendingTrackId) return false;
+
+  const isExpired = Date.now() - pendingTrackStartedAt > PENDING_TRACK_LOCK_MS;
+
+  if (isExpired) {
+    clearPendingTrack();
+    return false;
+  }
+
+  return spotifyTrackId !== pendingTrackId;
+}
+
+// =========================
 // 현재 화면의 재생 가능한 곡 목록 가져오기
 // =========================
 function getCurrentPageTrackQueue(clickedTrack) {
@@ -360,6 +419,7 @@ function renderEmptyFooter() {
   if (currentCover) {
     currentCover.src = EMPTY_TRACK.cover;
     currentCover.alt = "MOOD WAVE 기본 커버";
+    currentCover.dataset.currentSrc = EMPTY_TRACK.cover;
   }
 
   if (currentTitle) {
@@ -482,16 +542,17 @@ async function playSelectedTrack(track) {
     return;
   }
 
-  const currentCover = document.querySelector("#currentCover");
+  setPendingTrack(playableTrack, uri);
+
   const currentTitle = document.querySelector("#currentTitle");
   const currentArtist = document.querySelector("#currentArtist");
 
   setFooterEmptyState(false);
 
-  if (currentCover) {
-    currentCover.src = playableTrack.cover || "";
-    currentCover.alt = `${playableTrack.title || "곡"} 앨범 커버`;
-  }
+  updateCoverImage(
+    playableTrack.cover || EMPTY_TRACK.cover,
+    `${playableTrack.title || "곡"} 앨범 커버`,
+  );
 
   if (currentTitle) {
     currentTitle.textContent = playableTrack.title || "";
@@ -527,6 +588,8 @@ async function playSelectedTrack(track) {
     console.log("현재 재생목록:", queue.uris);
     return;
   }
+
+  clearPendingTrack();
 
   const errorText = await response.text();
   console.error("선택한 곡 재생 실패:", response.status, errorText);
@@ -585,14 +648,36 @@ function updateRepeatButtonUI() {
 }
 
 // =========================
+// 볼륨 버튼 아이콘 변경
+// =========================
+function updateVolumeButtonIcon() {
+  const volumeButton = document.querySelector("#volumeButton");
+  const volumeButtonIcon = document.querySelector("#volumeButtonIcon");
+
+  if (!volumeButton || !volumeButtonIcon) return;
+
+  const isMuted = currentVolume <= 0;
+
+  volumeButtonIcon.src = isMuted
+    ? PLAYER_ICONS.volumeMuted
+    : PLAYER_ICONS.volume;
+
+  volumeButton.setAttribute("aria-label", isMuted ? "음소거 해제" : "음소거");
+
+  volumeButton.title = isMuted ? "음소거 해제" : "음소거";
+}
+
+// =========================
 // 볼륨 UI 변경
 // =========================
 function updateVolumeUI() {
   const volumeFill = document.querySelector("#volumeFill");
 
-  if (!volumeFill) return;
+  if (volumeFill) {
+    volumeFill.style.width = `${currentVolume * 100}%`;
+  }
 
-  volumeFill.style.width = `${currentVolume * 100}%`;
+  updateVolumeButtonIcon();
 }
 
 // =========================
@@ -607,15 +692,31 @@ function closePlayerPopover() {
 }
 
 // =========================
+// 현재 열린 플레이어 모달 타입 확인
+// =========================
+function isPlayerPopoverOpen(type) {
+  const popover = document.querySelector("#playerPopover");
+
+  if (!popover) return false;
+
+  return popover.dataset.type === type;
+}
+
+// =========================
 // 플레이어 작은 모달 열기
 // =========================
-function openPlayerPopover(anchorElement, title, contentHTML) {
+function openPlayerPopover(anchorElement, title, contentHTML, type = "") {
   closePlayerPopover();
 
   document.body.insertAdjacentHTML(
     "beforeend",
     `
-      <div id="playerPopover" class="player-popover" role="dialog">
+      <div
+        id="playerPopover"
+        class="player-popover"
+        role="dialog"
+        data-type="${escapeHTML(type)}"
+      >
         <div class="player-popover__header">
           <strong class="player-popover__title">${escapeHTML(title)}</strong>
 
@@ -655,10 +756,40 @@ function openPlayerPopover(anchorElement, title, contentHTML) {
 }
 
 // =========================
+// 커버 이미지 깜빡임 없이 변경
+// =========================
+function updateCoverImage(nextSrc, nextAlt = "앨범 커버") {
+  const currentCover = document.querySelector("#currentCover");
+
+  if (!currentCover || !nextSrc) return;
+
+  if (currentCover.dataset.currentSrc === nextSrc) {
+    currentCover.alt = nextAlt;
+    return;
+  }
+
+  const loadId = ++coverImageLoadId;
+  const preloadImage = new Image();
+
+  preloadImage.onload = () => {
+    if (loadId !== coverImageLoadId) return;
+
+    currentCover.src = nextSrc;
+    currentCover.alt = nextAlt;
+    currentCover.dataset.currentSrc = nextSrc;
+  };
+
+  preloadImage.onerror = () => {
+    console.warn("커버 이미지 로딩 실패:", nextSrc);
+  };
+
+  preloadImage.src = nextSrc;
+}
+
+// =========================
 // 현재 재생곡 UI 업데이트
 // =========================
 function updateCurrentTrackUI(track) {
-  const currentCover = document.querySelector("#currentCover");
   const currentTitle = document.querySelector("#currentTitle");
   const currentArtist = document.querySelector("#currentArtist");
 
@@ -666,10 +797,10 @@ function updateCurrentTrackUI(track) {
 
   setFooterEmptyState(false);
 
-  if (currentCover) {
-    currentCover.src = track.album?.images?.[0]?.url || "";
-    currentCover.alt = `${track.name} 앨범 커버`;
-  }
+  updateCoverImage(
+    track.album?.images?.[0]?.url || EMPTY_TRACK.cover,
+    `${track.name} 앨범 커버`,
+  );
 
   if (currentTitle) {
     currentTitle.textContent = track.name || "";
@@ -805,6 +936,11 @@ async function toggleRepeat() {
 // 대기열 보기
 // =========================
 async function showQueue(anchorElement) {
+  if (isPlayerPopoverOpen("queue")) {
+    closePlayerPopover();
+    return;
+  }
+
   try {
     const response = await spotifyRequest(
       "https://api.spotify.com/v1/me/player/queue",
@@ -874,7 +1010,12 @@ async function showQueue(anchorElement) {
           </p>
         `;
 
-    openPlayerPopover(anchorElement, "대기열", currentHTML + queueHTML);
+    openPlayerPopover(
+      anchorElement,
+      "대기열",
+      currentHTML + queueHTML,
+      "queue",
+    );
   } catch (error) {
     console.error("대기열 조회 실패:", error);
     alert("대기열을 불러올 수 없습니다.");
@@ -885,6 +1026,11 @@ async function showQueue(anchorElement) {
 // 연결 가능한 기기 보기
 // =========================
 async function showDevices(anchorElement) {
+  if (isPlayerPopoverOpen("devices")) {
+    closePlayerPopover();
+    return;
+  }
+
   try {
     const response = await spotifyRequest(
       "https://api.spotify.com/v1/me/player/devices",
@@ -936,7 +1082,7 @@ async function showDevices(anchorElement) {
           </p>
         `;
 
-    openPlayerPopover(anchorElement, "연결 기기", devicesHTML);
+    openPlayerPopover(anchorElement, "연결 기기", devicesHTML, "devices");
   } catch (error) {
     console.error("연결 기기 조회 실패:", error);
     alert("연결 기기를 불러올 수 없습니다.");
@@ -1030,16 +1176,41 @@ async function handleProgressBarClick(event) {
 }
 
 // =========================
+// 전체화면 버튼 아이콘 변경
+// =========================
+function updateFullscreenButtonIcon() {
+  const fullscreenButton = document.querySelector("#fullscreenButton");
+  const fullscreenButtonIcon = document.querySelector("#fullscreenButtonIcon");
+
+  if (!fullscreenButton || !fullscreenButtonIcon) return;
+
+  const isFullscreen = Boolean(document.fullscreenElement);
+
+  fullscreenButtonIcon.src = isFullscreen
+    ? PLAYER_ICONS.fullscreenExit
+    : PLAYER_ICONS.fullscreen;
+
+  fullscreenButton.setAttribute(
+    "aria-label",
+    isFullscreen ? "전체 화면 해제" : "전체 화면",
+  );
+
+  fullscreenButton.title = isFullscreen ? "전체 화면 해제" : "전체 화면";
+}
+
+// =========================
 // 전체화면 토글
 // =========================
 async function toggleFullscreen() {
   try {
     if (!document.fullscreenElement) {
       await document.documentElement.requestFullscreen();
+      updateFullscreenButtonIcon();
       return;
     }
 
     await document.exitFullscreen();
+    updateFullscreenButtonIcon();
   } catch (error) {
     console.error("전체화면 변경 실패:", error);
     alert("전체화면을 변경할 수 없습니다.");
@@ -1086,6 +1257,18 @@ function createSpotifyPlayer() {
     if (!state) return;
 
     const currentTrack = state.track_window.current_track;
+
+    if (!currentTrack) return;
+
+    if (isWaitingForPendingTrack(currentTrack.id)) {
+      console.log("이전 곡 상태 무시:", currentTrack.name);
+      return;
+    }
+
+    if (pendingTrackId && currentTrack.id === pendingTrackId) {
+      clearPendingTrack();
+    }
+
     currentTrackId = currentTrack.id;
 
     currentTrackInfo = {
@@ -1332,8 +1515,9 @@ export function renderFooter() {
           />
         </button>
 
-        <button id="volumeButton" class="player__icon" type="button" aria-label="볼륨">
+        <button id="volumeButton" class="player__icon" type="button" aria-label="음소거">
           <img
+            id="volumeButtonIcon"
             src="/assets/icon/Volume_XS.svg"
             width="32"
             height="32"
@@ -1348,6 +1532,7 @@ export function renderFooter() {
 
       <button id="fullscreenButton" class="player__icon" type="button" aria-label="전체 화면">
         <img
+          id="fullscreenButtonIcon"
           src="/assets/icon/FullScreen_S.svg"
           width="32"
           height="32"
@@ -1501,6 +1686,8 @@ function initFooterEvents() {
   if (fullscreenButton) {
     fullscreenButton.addEventListener("click", toggleFullscreen);
   }
+
+  document.addEventListener("fullscreenchange", updateFullscreenButtonIcon);
 
   if (progressTrack) {
     progressTrack.addEventListener("click", handleProgressBarClick);

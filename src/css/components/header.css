@@ -26,6 +26,10 @@
   cursor: pointer;
 }
 
+.header__nav-btn:disabled {
+  cursor: not-allowed;
+}
+
 /* 햄버거 버튼 */
 .header__hamburger-btn {
   display: none;

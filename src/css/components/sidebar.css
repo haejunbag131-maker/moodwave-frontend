@@ -8,7 +8,7 @@
   min-width: 0;
   min-height: 0;
   background: #000;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .sidebar__header {
@@ -20,6 +20,10 @@
    로고
 ========================= */
 .sidebar__brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   height: 70px;
   margin-bottom: 20px;
 }
@@ -52,30 +56,69 @@
 .sidebar__nav-secondary {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .sidebar__nav-secondary {
-  margin-top: 49px;
+  margin-top: 44px;
 }
 
 .sidebar__nav-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 20px;
   min-width: 0;
-  height: 32px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
   color: var(--text-secondary);
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .sidebar__nav-item:hover {
+  background: rgba(255, 255, 255, 0.07);
   color: var(--text-primary);
+}
+
+.sidebar__nav-item.is-active {
+  background: linear-gradient(
+    90deg,
+    rgba(32, 232, 48, 0.15) 0%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  color: var(--text-primary);
+}
+
+.sidebar__nav-item.is-active::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  width: 4px;
+  height: 52%;
+  border-radius: 999px;
+  background: var(--accent);
+  transform: translateY(-50%);
+}
+
+.sidebar__nav-item:active {
+  transform: scale(0.98);
 }
 
 .sidebar__icon {
   flex-shrink: 0;
   width: 32px;
   height: 32px;
+}
+
+.sidebar__nav-item.is-active .sidebar__icon {
+  opacity: 1;
+  filter: brightness(1.15);
 }
 
 .sidebar__label {
@@ -102,10 +145,10 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  gap: 20px;
+  gap: 8px;
   min-width: 0;
   min-height: 0;
-  padding: 24px 30px 40px;
+  padding: 22px 30px 40px;
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -121,20 +164,50 @@
   justify-content: space-between;
   gap: 8px;
   min-width: 0;
+  min-height: 38px;
 }
 
 .sidebar__playlist-item {
+  position: relative;
+  display: flex;
+  align-items: center;
   flex: 1;
   min-width: 0;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+
   overflow: hidden;
   color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1;
   white-space: nowrap;
   text-overflow: ellipsis;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .sidebar__playlist-row:hover .sidebar__playlist-item,
 .sidebar__playlist-item:hover {
+  background: rgba(255, 255, 255, 0.07);
   color: var(--text-primary);
+}
+
+.sidebar__playlist-item.is-active {
+  background: linear-gradient(
+    90deg,
+    rgba(32, 232, 48, 0.2) 0%,
+    rgba(255, 255, 255, 0.07) 100%
+  );
+  color: var(--text-primary);
+  font-weight: var(--font-bold);
+}
+
+.sidebar__playlist-item:active {
+  transform: scale(0.98);
 }
 
 /* =========================
@@ -227,6 +300,9 @@
    플레이리스트 모달
 ========================= */
 .playlist-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 6000;
   display: none;
 }
 
@@ -235,17 +311,17 @@
 }
 
 .playlist-modal__overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: 1000;
+  z-index: 0;
   background: rgba(0, 0, 0, 0.55);
 }
 
 .playlist-modal__content {
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
-  z-index: 1001;
+  z-index: 1;
   width: 320px;
   padding: 24px;
   border-radius: 16px;
@@ -325,101 +401,8 @@
 }
 
 /* =========================
-   태블릿 / 모바일 사이드바
-========================= */
-@media (max-width: 1024px) {
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: -280px;
-    z-index: 1000;
-    width: 280px;
-    max-width: 80vw;
-    height: 100dvh;
-    transition: left 0.25s ease;
-  }
-
-  .sidebar.is-open {
-    left: 0;
-  }
-
-  .sidebar__header {
-    padding: 0 22px;
-  }
-
-  .sidebar__brand {
-    height: 64px;
-    margin-bottom: 18px;
-  }
-
-  .sidebar__brand-link {
-    gap: 10px;
-  }
-
-  .sidebar__brand-link svg {
-    width: 30px;
-    height: 30px;
-  }
-
-  .sidebar__brand-link span {
-    font-size: 16px;
-  }
-
-  .sidebar__brand:hover svg {
-    color: #1ed760;
-  }
-
-  .sidebar__nav-primary,
-  .sidebar__nav-secondary {
-    gap: 18px;
-  }
-
-  .sidebar__nav-secondary {
-    margin-top: 40px;
-  }
-
-  .sidebar__nav-item {
-    gap: 14px;
-  }
-
-  .sidebar__icon {
-    width: 28px;
-    height: 28px;
-  }
-
-  .sidebar__label {
-    font-size: 16px;
-    line-height: 21px;
-  }
-
-  .sidebar__divider {
-    margin: 22px 22px 0;
-  }
-
-  .sidebar__playlist-list {
-    gap: 18px;
-    padding: 22px 22px 36px;
-  }
-
-  .playlist-more-menu {
-    width: 240px;
-  }
-
-  .playlist-more-menu__item {
-    font-size: 15px;
-  }
-}
-
-/* =========================
    사이드바 닫기 버튼
 ========================= */
-.sidebar__brand {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
 .sidebar__close-button {
   display: none;
   align-items: center;
@@ -444,35 +427,101 @@
   color: var(--text-primary);
 }
 
-@media (max-width: 1024px) {
-  .sidebar__close-button {
-    display: inline-flex;
-  }
-}
-
 /* =========================
-   플레이리스트 모달 반응형
+   태블릿 / 모바일 사이드바
 ========================= */
-@media (max-width: 480px) {
-  .playlist-modal__content {
-    width: calc(100% - 32px);
-    max-width: 320px;
-    padding: 20px;
+@media (max-width: 1024px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    z-index: 1000;
+    width: 280px;
+    max-width: 80vw;
+    height: 100dvh;
+    overflow: visible;
+    transition: left 0.25s ease;
   }
 
-  .playlist-modal__title {
-    font-size: 18px;
+  .sidebar.is-open {
+    left: 0;
   }
 
-  .playlist-modal__buttons {
-    flex-direction: column-reverse;
+  .sidebar__header {
+    padding: 0 22px;
   }
 
-  .playlist-modal__button {
-    width: 100%;
+  .sidebar__brand {
+    height: 64px;
+    margin-bottom: 18px;
+  }
+
+  .sidebar__brand-link {
+    gap: 10px;
+  }
+
+  .sidebar__brand-link img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .sidebar__brand-link span {
+    font-size: 16px;
+  }
+
+  .sidebar__nav-primary,
+  .sidebar__nav-secondary {
+    gap: 14px;
+  }
+
+  .sidebar__nav-secondary {
+    margin-top: 36px;
+  }
+
+  .sidebar__nav-item {
+    gap: 14px;
+    min-height: 42px;
+    padding: 0 10px;
+  }
+
+  .sidebar__icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  .sidebar__label {
+    font-size: 16px;
+    line-height: 21px;
+  }
+
+  .sidebar__divider {
+    margin: 22px 22px 0;
+  }
+
+  .sidebar__playlist-list {
+    gap: 8px;
+    padding: 20px 22px 36px;
+  }
+
+  .sidebar__playlist-row {
+    min-height: 36px;
+  }
+
+  .sidebar__playlist-item {
+    min-height: 32px;
+    padding: 0 12px;
+    font-size: 14px;
   }
 
   .playlist-more-menu {
-    width: min(270px, calc(100vw - 24px));
+    width: 240px;
+  }
+
+  .playlist-more-menu__item {
+    font-size: 15px;
+  }
+
+  .sidebar__close-button {
+    display: inline-flex;
   }
 }

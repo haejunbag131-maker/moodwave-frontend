@@ -1,15 +1,17 @@
-import { renderSongTable, initSongTable } from '../components/songTable.js';
-import { playlistMap, weatherTracks } from '../data.js';
+import { renderSongTable, initSongTable } from "../components/songTable.js";
+import { playlistMap, weatherTracks } from "../data.js";
 
 // =========================
 // Weather Playlist 페이지 HTML 렌더링
 // =========================
 export function renderWeatherPlaylistPage() {
   return `
+    <!-- 스티키 헤더 -->
+    <div class="playlist-sticky-header">
+      <span class="sticky-title"></span>
+    </div>
+
     <!-- 플레이리스트 히어로 섹션 -->
-<div class="playlist-sticky-header">
-  <span class="sticky-title"></span>
-</div>
     <div class="playlist-hero-container">
       <div class="playlist-cover" id="weatherPlaylistCover"></div>
 
@@ -78,7 +80,7 @@ export function initWeatherPlaylistPage() {
   renderWeatherTracks(playlistType, playlist);
   initSongTable();
 
-  console.log('Weather Playlist page loaded');
+  console.log("Weather Playlist page loaded");
 }
 
 // =========================
@@ -86,45 +88,35 @@ export function initWeatherPlaylistPage() {
 // 예: #/weather-playlist?playlist=Rain
 // =========================
 function getPlaylistTypeFromHash() {
-  const queryString = location.hash.split('?')[1];
+  const queryString = location.hash.split("?")[1];
   const params = new URLSearchParams(queryString);
 
-  const playlistType = params.get('playlist');
+  const playlistType = params.get("playlist");
 
   if (playlistMap[playlistType]) {
     return playlistType;
   }
 
-  return 'Rain';
+  return "Rain";
 }
 
 // =========================
 // 히어로 섹션 렌더링
 // =========================
 function renderPlaylistHero(playlist) {
-  const playlistCover = document.querySelector('#weatherPlaylistCover');
-  const playlistLabel = document.querySelector('#weatherPlaylistLabel');
-  const playlistTitle = document.querySelector('#weatherPlaylistTitle');
-  const playlistDesc = document.querySelector('#weatherPlaylistDesc');
-  const playlistGenre = document.querySelector('#weatherPlaylistGenre');
+  const playlistCover = document.querySelector("#weatherPlaylistCover");
+  const playlistLabel = document.querySelector("#weatherPlaylistLabel");
+  const playlistTitle = document.querySelector("#weatherPlaylistTitle");
+  const playlistDesc = document.querySelector("#weatherPlaylistDesc");
+  const playlistGenre = document.querySelector("#weatherPlaylistGenre");
 
-  // 스크롤 시 스티키 헤더
-  const main = document.querySelector('.playlist-main');
-  const hero = document.querySelector('.playlist-hero-container');
-  const stickyHeader = document.querySelector('.playlist-sticky-header');
-  const stickyTitle = document.querySelector('.sticky-title');
-
-  stickyTitle.textContent = playlist.title;
-
-  main.addEventListener('scroll', () => {
-    if (main.scrollTop > 250) {
-      stickyHeader.classList.add('show');
-    } else {
-      stickyHeader.classList.remove('show');
-    }
-  });
-
-  if (!playlistCover || !playlistLabel || !playlistTitle || !playlistDesc || !playlistGenre) {
+  if (
+    !playlistCover ||
+    !playlistLabel ||
+    !playlistTitle ||
+    !playlistDesc ||
+    !playlistGenre
+  ) {
     return;
   }
 
@@ -134,8 +126,40 @@ function renderPlaylistHero(playlist) {
   playlistGenre.textContent = playlist.genre;
 
   playlistCover.style.backgroundImage = `url(${playlist.image})`;
-  playlistCover.style.backgroundSize = 'cover';
-  playlistCover.style.backgroundPosition = 'center';
+  playlistCover.style.backgroundSize = "cover";
+  playlistCover.style.backgroundPosition = "center";
+
+  initStickyHeader(playlist.title);
+}
+
+// =========================
+// 스크롤 시 스티키 헤더 처리
+// =========================
+function initStickyHeader(title) {
+  const main =
+    document.querySelector(".playlist-main") || document.querySelector("#main");
+  const hero = document.querySelector(".playlist-hero-container");
+  const stickyHeader = document.querySelector(".playlist-sticky-header");
+  const stickyTitle = document.querySelector(".sticky-title");
+
+  if (!main || !hero || !stickyHeader || !stickyTitle) {
+    return;
+  }
+
+  stickyTitle.textContent = title;
+
+  const handleStickyHeader = () => {
+    const showPoint = hero.offsetTop + hero.offsetHeight - 100;
+
+    if (main.scrollTop > showPoint) {
+      stickyHeader.classList.add("show");
+    } else {
+      stickyHeader.classList.remove("show");
+    }
+  };
+
+  main.addEventListener("scroll", handleStickyHeader);
+  handleStickyHeader();
 }
 
 // =========================
@@ -145,7 +169,7 @@ function renderPlaylistHero(playlist) {
 function convertDurationToMs(duration) {
   if (!duration) return 0;
 
-  const [minutes, seconds] = duration.split(':').map(Number);
+  const [minutes, seconds] = duration.split(":").map(Number);
 
   if (Number.isNaN(minutes) || Number.isNaN(seconds)) {
     return 0;
@@ -174,17 +198,21 @@ function convertToSongTableTracks(tracks, playlistType, playlist) {
 // songTable.js 사용
 // =========================
 function renderWeatherTracks(playlistType, playlist) {
-  const tableContainer = document.querySelector('#weatherPlaylistSongTable');
+  const tableContainer = document.querySelector("#weatherPlaylistSongTable");
   const tracks = weatherTracks[playlistType] || [];
 
   if (!tableContainer) return;
 
-  const songTableTracks = convertToSongTableTracks(tracks, playlistType, playlist);
+  const songTableTracks = convertToSongTableTracks(
+    tracks,
+    playlistType,
+    playlist,
+  );
 
   tableContainer.innerHTML = renderSongTable(songTableTracks, {
-    actionType: 'playlist',
-    actionHeader: 'Add',
-    emptyMessage: '아직 추천된 곡이 없습니다.',
+    actionType: "playlist",
+    actionHeader: "Add",
+    emptyMessage: "아직 추천된 곡이 없습니다.",
   });
 }
 
@@ -192,7 +220,7 @@ function renderWeatherTracks(playlistType, playlist) {
 // 비어있는 플레이리스트 처리
 // =========================
 function renderEmptyPlaylist() {
-  const main = document.querySelector('#main');
+  const main = document.querySelector("#main");
 
   if (!main) return;
 
