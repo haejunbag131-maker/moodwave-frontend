@@ -1288,12 +1288,17 @@ function createSpotifyPlayer() {
 
     if (!currentTrack) return;
 
+    let shouldUpdateTrackUI = true;
+
     if (isWaitingForPendingTrack(currentTrack.id)) {
       console.log(
-        "pendingTrackId와 실제 Spotify 트랙 ID가 다름. 현재 재생 상태로 동기화:",
+        "pendingTrackId와 실제 Spotify 트랙 ID가 다름. 진행바만 현재 상태로 동기화:",
         currentTrack.name,
       );
 
+      // 핵심:
+      // 이 케이스에서는 커버/제목을 다시 건드리면 깜빡임이 생김
+      shouldUpdateTrackUI = false;
       clearPendingTrack();
     }
 
@@ -1314,7 +1319,10 @@ function createSpotifyPlayer() {
     isPlaying = !state.paused;
     updatePlayButtonIcon();
 
-    updateCurrentTrackUI(currentTrack);
+    if (shouldUpdateTrackUI) {
+      updateCurrentTrackUI(currentTrack);
+    }
+
     updateProgressUI(state.position, state.duration);
 
     setTimeout(() => {
