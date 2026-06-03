@@ -1289,8 +1289,12 @@ function createSpotifyPlayer() {
     if (!currentTrack) return;
 
     if (isWaitingForPendingTrack(currentTrack.id)) {
-      console.log("이전 곡 상태 무시:", currentTrack.name);
-      return;
+      console.log(
+        "pendingTrackId와 실제 Spotify 트랙 ID가 다름. 현재 재생 상태로 동기화:",
+        currentTrack.name,
+      );
+
+      clearPendingTrack();
     }
 
     if (pendingTrackId && currentTrack.id === pendingTrackId) {
