@@ -788,28 +788,53 @@ function updateCoverImage(nextSrc, nextAlt = "앨범 커버") {
 }
 
 // =========================
+// 곡 제목 비교용 문자열 정규화
+// =========================
+function normalizeTrackText(value = "") {
+  return String(value)
+    .toLowerCase()
+    .replace(/[\s\-_()[\].,]/g, "");
+}
+
+// =========================
 // 현재 재생곡 UI 업데이트
 // =========================
 function updateCurrentTrackUI(track) {
+  const currentCover = document.querySelector("#currentCover");
   const currentTitle = document.querySelector("#currentTitle");
   const currentArtist = document.querySelector("#currentArtist");
 
   if (!track) return;
 
+  const nextTitle = track.name || "";
+  const nextArtist =
+    track.artists?.map((artist) => artist.name).join(", ") || "";
+
+  const currentTitleText = currentTitle?.textContent || "";
+
+  const isSameDisplayedTrack =
+    normalizeTrackText(currentTitleText) === normalizeTrackText(nextTitle);
+
   setFooterEmptyState(false);
 
-  updateCoverImage(
-    track.album?.images?.[0]?.url || EMPTY_TRACK.cover,
-    `${track.name} 앨범 커버`,
-  );
+  // 핵심:
+  // 이미 화면에 같은 곡 제목이 표시되어 있으면 커버 이미지는 다시 바꾸지 않음
+  // 그래야 클릭 직후 커버가 Spotify SDK 상태 업데이트로 다시 깜빡이지 않음
+  if (!isSameDisplayedTrack) {
+    updateCoverImage(
+      track.album?.images?.[0]?.url || EMPTY_TRACK.cover,
+      `${nextTitle} 앨범 커버`,
+    );
+  } else if (currentCover) {
+    currentCover.alt = `${nextTitle} 앨범 커버`;
+  }
 
   if (currentTitle) {
-    currentTitle.textContent = track.name || "";
+    currentTitle.textContent = nextTitle;
   }
 
   if (currentArtist) {
-    currentArtist.textContent =
-      track.artists?.map((artist) => artist.name).join(", ") || "";
+    currentArtist.textContent = nextArtist;
   }
 }
 
