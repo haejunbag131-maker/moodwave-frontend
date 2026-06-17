@@ -38,13 +38,14 @@ export function renderEmotion() {
 // =========================
 // 감정 추천 API 요청
 // =========================
-async function requestEmotionRecommend(text) {
+async function requestEmotionRecommend(text, signal) {
   const response = await fetch(API_ENDPOINTS.emotionRecommend, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ text }),
+    signal,
   });
 
   if (!response.ok) {
@@ -67,16 +68,21 @@ export function initEmotion() {
     return;
   }
 
-  if (button.dataset.bound === "true") return;
-  button.dataset.bound = "true";
+  let activeController = null;
+  let isActive = true;
 
-  button.addEventListener("click", async () => {
+  const handleRecommendClick = async () => {
     const text = input.value.trim();
 
     if (!text) {
       alert("감정을 입력해주세요.");
       return;
     }
+
+    activeController?.abort();
+
+    const controller = new AbortController();
+    activeController = controller;
 
     button.disabled = true;
     button.textContent = "추천 중...";
@@ -88,14 +94,23 @@ export function initEmotion() {
     trackGrid.innerHTML = "";
 
     try {
-      const data = await requestEmotionRecommend(text);
+      const data = await requestEmotionRecommend(
+        text,
+        controller.signal,
+      );
+
+      if (!isActive || controller.signal.aborted) return;
 
       console.log("감정 추천 결과:", data);
 
       renderEmotionResult(data);
       renderEmotionTracks(data.tracks || []);
     } catch (error) {
+      if (error.name === "AbortError") return;
+
       console.error("감정 추천 실패:", error);
+
+      if (!isActive) return;
 
       result.innerHTML = `
         <p class="emotion-result__error">
@@ -103,10 +118,20 @@ export function initEmotion() {
         </p>
       `;
     } finally {
+      if (!isActive || controller.signal.aborted) return;
+
       button.disabled = false;
       button.textContent = "음악 추천받기";
     }
-  });
+  };
+
+  button.addEventListener("click", handleRecommendClick);
+
+  return () => {
+    isActive = false;
+    activeController?.abort();
+    button.removeEventListener("click", handleRecommendClick);
+  };
 }
 
 // =========================
