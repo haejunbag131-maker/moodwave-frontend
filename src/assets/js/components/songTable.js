@@ -13,6 +13,7 @@ let hasMore = true;
 let selectedTrack = null;
 let isSongTableEventBound = false;
 let activeObserver = null;
+let activeSongTableRunId = 0;
 
 // =========================
 // 아이콘 경로
@@ -469,8 +470,9 @@ async function renderMoreSongs({
   observerId,
   loadingId,
   limit = DEFAULT_LIMIT,
+  runId,
 }) {
-  if (isLoading || !hasMore) return;
+  if (runId !== activeSongTableRunId || isLoading || !hasMore) return;
 
   const tableBody = document.querySelector(`#${tableBodyId}`);
   const observerTarget = document.querySelector(`#${observerId}`);
@@ -482,6 +484,10 @@ async function renderMoreSongs({
 
   try {
     const tracks = await getTracks(apiUrl, currentPage, limit);
+
+    if (runId !== activeSongTableRunId || !document.body.contains(tableBody)) {
+      return;
+    }
 
     if (!tracks || tracks.length === 0) {
       hasMore = false;
@@ -505,13 +511,26 @@ async function renderMoreSongs({
       observerTarget?.remove();
     }
   } catch (error) {
+    if (runId !== activeSongTableRunId) {
+      return;
+    }
+
     console.error("곡 데이터 로딩 실패:", error);
     hasMore = false;
     observerTarget?.remove();
   } finally {
-    isLoading = false;
-    setLoading(loadingId, false);
+    if (runId === activeSongTableRunId) {
+      isLoading = false;
+      setLoading(loadingId, false);
+    }
   }
+}
+
+function disconnectActiveObserver() {
+  if (!activeObserver) return;
+
+  activeObserver.disconnect();
+  activeObserver = null;
 }
 
 // =========================
@@ -562,20 +581,21 @@ export function initSongTablePage({
   observerId,
   limit = DEFAULT_LIMIT,
 }) {
+  activeSongTableRunId++;
+
+  const runId = activeSongTableRunId;
+
   currentPage = 0;
   isLoading = false;
   hasMore = true;
   selectedTrack = null;
 
-  if (activeObserver) {
-    activeObserver.disconnect();
-    activeObserver = null;
-  }
+  disconnectActiveObserver();
 
   renderAddPlaylistModal();
   initSongTableEvents();
 
-  initTopButton({
+  const cleanupTopButton = initTopButton({
     targetSelector: "#main",
     showAfter: 400,
   });
@@ -586,6 +606,7 @@ export function initSongTablePage({
     observerId,
     loadingId,
     limit,
+    runId,
   };
 
   renderMoreSongs(options);
@@ -609,6 +630,18 @@ export function initSongTablePage({
   if (observerTarget) {
     activeObserver.observe(observerTarget);
   }
+
+  return () => {
+    if (runId !== activeSongTableRunId) return;
+
+    activeSongTableRunId++;
+    disconnectActiveObserver();
+    cleanupTopButton?.();
+
+    isLoading = false;
+    hasMore = false;
+    selectedTrack = null;
+  };
 }
 
 // =========================

@@ -25,10 +25,17 @@ function renderTopButton(buttonId) {
 // =========================
 // 기존 스크롤 이벤트 제거
 // =========================
-function removeActiveScrollEvent() {
-  if (!activeScrollTarget || !activeScrollHandler) return;
+export function cleanupTopButton(buttonId = "topButton") {
+  if (activeScrollTarget && activeScrollHandler) {
+    activeScrollTarget.removeEventListener("scroll", activeScrollHandler);
+  }
 
-  activeScrollTarget.removeEventListener("scroll", activeScrollHandler);
+  const button = document.querySelector(`#${buttonId}`);
+
+  if (button) {
+    button.classList.remove("is-visible");
+    button.onclick = null;
+  }
 
   activeScrollTarget = null;
   activeScrollHandler = null;
@@ -75,7 +82,7 @@ export function initTopButton({
 
   if (!button) return;
 
-  removeActiveScrollEvent();
+  cleanupTopButton(buttonId);
 
   activeScrollTarget = scrollTarget;
 
@@ -92,4 +99,8 @@ export function initTopButton({
   });
 
   activeScrollHandler();
+
+  return () => {
+    cleanupTopButton(buttonId);
+  };
 }

@@ -27,7 +27,7 @@ export function renderPopularPage() {
 // Popular 페이지 초기 실행 함수
 // =========================
 export function initPopularPage() {
-  initSongTablePage({
+  return initSongTablePage({
     ...popularPageConfig,
     apiUrl: `${API_BASE_URL}/api/popular`,
     limit: 10,
