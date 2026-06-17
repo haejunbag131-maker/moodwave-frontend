@@ -22,7 +22,7 @@ export function renderLatestPage() {
 // Latest 페이지 초기 실행 함수
 // =========================
 export function initLatestPage() {
-  initSongTablePage({
+  return initSongTablePage({
     apiUrl: API_ENDPOINTS.latest,
     tableBodyId: "latestTableBody",
     loadingId: "latestLoading",
