@@ -3,18 +3,59 @@ import { API_ENDPOINTS } from "../api/api.js";
 
 const URECA_PICK_LIMIT = 6;
 const HOME_SECTION_LIMIT = 5;
+const HOME_DATA_CACHE_TTL_MS = 5 * 60 * 1000;
+
+let homeDataCache = null;
+let homeDataCachedAt = 0;
+let homeDataRequestPromise = null;
+let activeHomeRunId = 0;
+
+function getCachedHomeData() {
+  if (!homeDataCache) return null;
+
+  const cacheAge = Date.now() - homeDataCachedAt;
+
+  if (cacheAge > HOME_DATA_CACHE_TTL_MS) {
+    return null;
+  }
+
+  return homeDataCache;
+}
 
 // =========================
 // 홈 데이터 요청 함수
 // =========================
 async function getHomeData() {
-  const response = await fetch(API_ENDPOINTS.home);
+  const cachedHomeData = getCachedHomeData();
 
-  if (!response.ok) {
-    throw new Error("홈 데이터 요청 실패");
+  if (cachedHomeData) {
+    return cachedHomeData;
   }
 
-  return response.json();
+  if (homeDataRequestPromise) {
+    return homeDataRequestPromise;
+  }
+
+  homeDataRequestPromise = (async () => {
+    const response = await fetch(API_ENDPOINTS.home);
+
+    if (!response.ok) {
+      throw new Error("홈 데이터 요청 실패");
+    }
+
+    const homeData = await response.json();
+
+    homeDataCache = homeData;
+    homeDataCachedAt = Date.now();
+
+    return homeData;
+  })();
+
+  try {
+    return await homeDataRequestPromise;
+  } finally {
+    homeDataRequestPromise = null;
+  }
 }
 
 // =========================
@@ -241,6 +282,20 @@ function renderHomeSkeleton() {
   }
 }
 
+function renderHomeData(homeData) {
+  renderMidMixes(homeData.midMixes || []);
+
+  renderGrid(
+    "#popularGrid",
+    (homeData.popular || []).slice(0, HOME_SECTION_LIMIT),
+  );
+
+  renderGrid(
+    "#latestGrid",
+    (homeData.latest || []).slice(0, HOME_SECTION_LIMIT),
+  );
+}
+
 // =========================
 // SEE ALL 버튼 이벤트 등록 함수
 // =========================
@@ -260,28 +315,38 @@ function bindSeeAllEvents() {
 // =========================
 // 홈 초기 실행 함수
 // =========================
-export async function initHome() {
+export function initHome() {
+  const runId = ++activeHomeRunId;
+  const cachedHomeData = getCachedHomeData();
+
   bindSeeAllEvents();
   renderGreeting();
-  renderHomeSkeleton();
 
-  try {
-    const homeData = await getHomeData();
-
-    console.log("백엔드 홈 데이터:", homeData);
-
-    renderMidMixes(homeData.midMixes || []);
-
-    renderGrid(
-      "#popularGrid",
-      (homeData.popular || []).slice(0, HOME_SECTION_LIMIT),
-    );
-
-    renderGrid(
-      "#latestGrid",
-      (homeData.latest || []).slice(0, HOME_SECTION_LIMIT),
-    );
-  } catch (error) {
-    console.error("홈 데이터 로딩 실패:", error);
+  if (cachedHomeData) {
+    renderHomeData(cachedHomeData);
+  } else {
+    renderHomeSkeleton();
   }
+
+  (async () => {
+    try {
+      const homeData = await getHomeData();
+
+      if (runId !== activeHomeRunId) return;
+
+      console.log("백엔드 홈 데이터:", homeData);
+
+      renderHomeData(homeData);
+    } catch (error) {
+      if (runId !== activeHomeRunId) return;
+
+      console.error("홈 데이터 로딩 실패:", error);
+    }
+  })();
+
+  return () => {
+    if (runId === activeHomeRunId) {
+      activeHomeRunId++;
+    }
+  };
 }
