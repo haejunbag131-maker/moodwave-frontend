@@ -63,6 +63,7 @@ let pendingTrackStartedAt = 0;
 const PENDING_TRACK_LOCK_MS = 4000;
 const SPOTIFY_SDK_URL = "https://sdk.scdn.co/spotify-player.js";
 const SPOTIFY_PLAYER_READY_TIMEOUT_MS = 10000;
+const TRACK_SEARCH_CACHE_TTL_MS = 10 * 60 * 1000;
 
 let isShuffleOn = false;
 let repeatMode = "off";
@@ -73,6 +74,8 @@ let currentDuration = 0;
 let currentPosition = 0;
 let lastProgressUpdatedAt = 0;
 let progressTimer = null;
+const trackSearchCacheMap = new Map();
+const trackSearchRequestMap = new Map();
 
 // =========================
 // Spotify Access Token 가져오기
@@ -429,14 +432,53 @@ function getCurrentPageTrackQueue(clickedTrack) {
 // =========================
 // 더미 카드 데이터를 Spotify 검색 결과로 변환
 // =========================
+function getTrackSearchKeyword(track) {
+  return `${track.title || ""} ${track.artist || ""}`.trim();
+}
+
+function getTrackSearchCacheKey(keyword) {
+  return keyword.toLowerCase();
+}
+
+function getCachedTrackSearchResult(cacheKey) {
+  const cachedTrackSearchResult = trackSearchCacheMap.get(cacheKey);
+
+  if (!cachedTrackSearchResult) return null;
+
+  const cacheAge = Date.now() - cachedTrackSearchResult.cachedAt;
+
+  if (cacheAge > TRACK_SEARCH_CACHE_TTL_MS) {
+    trackSearchCacheMap.delete(cacheKey);
+    return null;
+  }
+
+  return cachedTrackSearchResult;
+}
+
 async function searchTrackFromBackend(track) {
-  const keyword = `${track.title || ""} ${track.artist || ""}`.trim();
+  const keyword = getTrackSearchKeyword(track);
 
   if (!keyword) {
     return null;
   }
 
-  try {
+  const cacheKey = getTrackSearchCacheKey(keyword);
+  const cachedTrackSearchResult = getCachedTrackSearchResult(cacheKey);
+
+  if (cachedTrackSearchResult) {
+    return cachedTrackSearchResult.track;
+  }
+
+  if (trackSearchRequestMap.has(cacheKey)) {
+    try {
+      return await trackSearchRequestMap.get(cacheKey);
+    } catch (error) {
+      console.error("카드 곡 검색 실패:", error);
+      return null;
+    }
+  }
+
+  const requestPromise = (async () => {
     const response = await fetch(HOME_SEARCH_API_URL(keyword), {
       method: "GET",
       credentials: "include",
@@ -471,9 +513,26 @@ async function searchTrackFromBackend(track) {
         firstTrack.image ||
         track.cover,
     };
+  })();
+
+  trackSearchRequestMap.set(cacheKey, requestPromise);
+
+  try {
+    const searchedTrack = await requestPromise;
+
+    trackSearchCacheMap.set(cacheKey, {
+      track: searchedTrack,
+      cachedAt: Date.now(),
+    });
+
+    return searchedTrack;
   } catch (error) {
     console.error("카드 곡 검색 실패:", error);
     return null;
+  } finally {
+    if (trackSearchRequestMap.get(cacheKey) === requestPromise) {
+      trackSearchRequestMap.delete(cacheKey);
+    }
   }
 }
 
