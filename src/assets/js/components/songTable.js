@@ -14,6 +14,7 @@ let selectedTrack = null;
 let isSongTableEventBound = false;
 let activeObserver = null;
 let activeSongTableRunId = 0;
+let activeSongFetchController = null;
 
 // =========================
 // 아이콘 경로
@@ -137,13 +138,13 @@ function normalizeTrack(item) {
 // =========================
 // 데이터 요청 함수
 // =========================
-async function getTracks(apiUrl, page, limit) {
+async function getTracks(apiUrl, page, limit, signal) {
   const url = new URL(apiUrl, window.location.origin);
 
   url.searchParams.set("page", page);
   url.searchParams.set("limit", limit);
 
-  const response = await fetch(url.toString());
+  const response = await fetch(url.toString(), { signal });
 
   if (!response.ok) {
     throw new Error("곡 데이터 요청 실패");
@@ -479,11 +480,19 @@ async function renderMoreSongs({
 
   if (!tableBody) return;
 
+  const controller = new AbortController();
+
+  activeSongFetchController = controller;
   isLoading = true;
   setLoading(loadingId, true);
 
   try {
-    const tracks = await getTracks(apiUrl, currentPage, limit);
+    const tracks = await getTracks(
+      apiUrl,
+      currentPage,
+      limit,
+      controller.signal,
+    );
 
     if (runId !== activeSongTableRunId || !document.body.contains(tableBody)) {
       return;
@@ -511,6 +520,10 @@ async function renderMoreSongs({
       observerTarget?.remove();
     }
   } catch (error) {
+    if (error.name === "AbortError") {
+      return;
+    }
+
     if (runId !== activeSongTableRunId) {
       return;
     }
@@ -519,6 +532,10 @@ async function renderMoreSongs({
     hasMore = false;
     observerTarget?.remove();
   } finally {
+    if (activeSongFetchController === controller) {
+      activeSongFetchController = null;
+    }
+
     if (runId === activeSongTableRunId) {
       isLoading = false;
       setLoading(loadingId, false);
@@ -531,6 +548,11 @@ function disconnectActiveObserver() {
 
   activeObserver.disconnect();
   activeObserver = null;
+}
+
+function abortActiveSongFetch() {
+  activeSongFetchController?.abort();
+  activeSongFetchController = null;
 }
 
 // =========================
@@ -590,6 +612,7 @@ export function initSongTablePage({
   hasMore = true;
   selectedTrack = null;
 
+  abortActiveSongFetch();
   disconnectActiveObserver();
 
   renderAddPlaylistModal();
@@ -635,6 +658,7 @@ export function initSongTablePage({
     if (runId !== activeSongTableRunId) return;
 
     activeSongTableRunId++;
+    abortActiveSongFetch();
     disconnectActiveObserver();
     cleanupTopButton?.();
 
