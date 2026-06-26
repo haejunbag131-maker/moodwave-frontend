@@ -194,7 +194,7 @@ export function renderChartPage() {
         </div>
 
         <div class="chart-box">
-          <h3>가장 많이 감상한 날씨 🎧</h3>
+          <h3>가장 많이 감상한 날씨 플레이리스트 🎧</h3>
 
           <div class="chart-container weather-container">
             <canvas id="weatherChart"></canvas>

@@ -802,6 +802,7 @@ async function playSelectedTrack(track) {
         offset: {
           position: queue.startIndex,
         },
+        position_ms: 0,
       }),
     },
   );
