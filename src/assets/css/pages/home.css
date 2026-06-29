@@ -110,6 +110,11 @@
   min-width: 0;
 }
 
+.section--deferred {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 360px;
+}
+
 .section__header {
   display: flex;
   align-items: center;
@@ -188,6 +193,7 @@
   width: 100%;
   height: 100%;
   border-radius: 4px;
+  background: #282828;
   object-fit: cover;
 }
 

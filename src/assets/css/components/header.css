@@ -127,11 +127,18 @@
   cursor: wait;
 }
 
-.spotify-connect-btn__logo {
+.spotify-connect-btn__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  width: 84px;
-  height: auto;
-  object-fit: contain;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #000;
+  font-size: 14px;
+  font-weight: var(--font-bold);
+  color: #1ed760;
 }
 
 .spotify-connect-btn strong {
@@ -355,11 +362,9 @@
     display: none;
   }
 
-  .spotify-connect-btn__logo {
+  .spotify-connect-btn__mark {
     width: 26px;
     height: 26px;
-    object-fit: cover;
-    object-position: left center;
   }
 
   .header__dropdown {

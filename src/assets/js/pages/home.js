@@ -9,9 +9,16 @@ let homeDataCache = null;
 let homeDataCachedAt = 0;
 let homeDataRequestPromise = null;
 let activeHomeRunId = 0;
+let deferredCoverObserver = null;
 
-function getOptimizedCoverUrl(cover = "") {
-  return cover.replace("/image/ab67616d0000b273", "/image/ab67616d00001e02");
+function getOptimizedCoverUrl(cover = "", size = "medium") {
+  const spotifyImageSize =
+    size === "small" ? "ab67616d00004851" : "ab67616d00001e02";
+
+  return cover.replace(
+    /\/image\/(?:ab67616d0000b273|ab67616d00001e02|ab67616d00004851)/,
+    `/image/${spotifyImageSize}`,
+  );
 }
 
 function getCachedHomeData() {
@@ -41,6 +48,19 @@ async function getHomeData() {
   }
 
   homeDataRequestPromise = (async () => {
+    const preloadedHomeDataPromise = window.__moodwaveHomeDataPromise;
+
+    window.__moodwaveHomeDataPromise = null;
+
+    const preloadedHomeData = await preloadedHomeDataPromise;
+
+    if (preloadedHomeData) {
+      homeDataCache = preloadedHomeData;
+      homeDataCachedAt = Date.now();
+
+      return preloadedHomeData;
+    }
+
     const response = await fetch(API_ENDPOINTS.home);
 
     if (!response.ok) {
@@ -82,7 +102,7 @@ export function renderHome() {
       <div id="popularGrid" class="section__grid"></div>
     </section>
 
-    <section class="section">
+    <section class="section section--deferred">
       <div class="section__header">
         <h2 class="section__title">Latest</h2>
         <button type="button" id="latestSeeAllBtn" class="section__see-all">
@@ -99,9 +119,12 @@ export function renderHome() {
 // 중간 믹스 카드 생성 함수
 // =========================
 function createMidMixCard(item, index) {
-  const cover = getOptimizedCoverUrl(item.cover || item.imageUrl || "");
+  const cover = getOptimizedCoverUrl(
+    item.cover || item.imageUrl || "",
+    "small",
+  );
   const artist = item.artist || item.description || "";
-  const fetchPriority = index < 3 ? 'fetchpriority="high"' : "";
+  const loading = index < 3 ? "eager" : "lazy";
 
   return `
     <article
@@ -118,9 +141,9 @@ function createMidMixCard(item, index) {
         src="${cover}"
         width="82"
         height="82"
-        loading="eager"
+        loading="${loading}"
         decoding="async"
-        ${fetchPriority}
+        fetchpriority="low"
         alt=""
       />
 
@@ -160,6 +183,9 @@ function createGridCard(item, isPriorityImage = false) {
   const artist = item.artist || item.description || "";
   const loading = isPriorityImage ? "eager" : "lazy";
   const fetchPriority = isPriorityImage ? 'fetchpriority="high"' : "";
+  const sourceAttribute = isPriorityImage
+    ? `src="${cover}"`
+    : `data-src="${cover}"`;
 
   return `
     <article
@@ -174,7 +200,7 @@ function createGridCard(item, isPriorityImage = false) {
       <div class="grid-card__art-wrap">
         <img
           class="grid-card__art"
-          src="${cover}"
+          ${sourceAttribute}
           width="182"
           height="182"
           loading="${loading}"
@@ -212,8 +238,55 @@ function renderGrid(selector, data) {
   const isPriorityGrid = selector === "#popularGrid";
 
   grid.innerHTML = data
-    .map((item, index) => createGridCard(item, isPriorityGrid && index < HOME_SECTION_LIMIT))
+    .map((item, index) =>
+      createGridCard(item, isPriorityGrid && index < 2),
+    )
     .join("");
+}
+
+function disconnectDeferredCoverObserver() {
+  deferredCoverObserver?.disconnect();
+  deferredCoverObserver = null;
+}
+
+function loadDeferredCover(image) {
+  const source = image.dataset.src;
+
+  if (!source) return;
+
+  image.src = source;
+  image.removeAttribute("data-src");
+}
+
+function observeDeferredCovers() {
+  disconnectDeferredCoverObserver();
+
+  const images = document.querySelectorAll(".grid-card__art[data-src]");
+
+  if (!("IntersectionObserver" in window)) {
+    images.forEach(loadDeferredCover);
+    return;
+  }
+
+  const scrollRoot = document.querySelector("#main");
+
+  deferredCoverObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+
+        loadDeferredCover(entry.target);
+        deferredCoverObserver?.unobserve(entry.target);
+      });
+    },
+    {
+      root: scrollRoot,
+      rootMargin: "200px",
+      threshold: 0,
+    },
+  );
+
+  images.forEach((image) => deferredCoverObserver.observe(image));
 }
 
 // =========================
@@ -294,6 +367,8 @@ function renderHomeSkeleton() {
 }
 
 function renderHomeData(homeData) {
+  disconnectDeferredCoverObserver();
+
   renderMidMixes(homeData.midMixes || []);
 
   renderGrid(
@@ -305,6 +380,8 @@ function renderHomeData(homeData) {
     "#latestGrid",
     (homeData.latest || []).slice(0, HOME_SECTION_LIMIT),
   );
+
+  observeDeferredCovers();
 }
 
 // =========================
@@ -345,23 +422,21 @@ export function initHome() {
     renderHomeData(cachedHomeData);
   } else {
     renderHomeSkeleton();
+
+    (async () => {
+      try {
+        const homeData = await getHomeData();
+
+        if (runId !== activeHomeRunId) return;
+
+        renderHomeData(homeData);
+      } catch (error) {
+        if (runId !== activeHomeRunId) return;
+
+        console.error("홈 데이터 로딩 실패:", error);
+      }
+    })();
   }
-
-  (async () => {
-    try {
-      const homeData = await getHomeData();
-
-      if (runId !== activeHomeRunId) return;
-
-      console.log("백엔드 홈 데이터:", homeData);
-
-      renderHomeData(homeData);
-    } catch (error) {
-      if (runId !== activeHomeRunId) return;
-
-      console.error("홈 데이터 로딩 실패:", error);
-    }
-  })();
 
   return () => {
     if (runId === activeHomeRunId) {
@@ -369,5 +444,6 @@ export function initHome() {
     }
 
     cleanupSeeAllEvents();
+    disconnectDeferredCoverObserver();
   };
 }

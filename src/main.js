@@ -178,13 +178,30 @@ function init() {
   header.innerHTML = renderHeader();
   footer.innerHTML = renderFooter();
 
-  initSidebar();
-  initHeader();
-  initFooter();
-
   router();
 
   window.addEventListener("hashchange", router);
+
+  const shellInitializers = [initHeader, initFooter, initSidebar];
+
+  const initNextShellInteraction = () => {
+    const initializer = shellInitializers.shift();
+
+    if (!initializer) return;
+
+    initializer();
+
+    if (shellInitializers.length > 0) {
+      window.setTimeout(initNextShellInteraction, 0);
+    }
+  };
+
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(initNextShellInteraction, { timeout: 1200 });
+    return;
+  }
+
+  window.setTimeout(initNextShellInteraction, 0);
 }
 
 initToast();

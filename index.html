@@ -8,7 +8,13 @@
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <link rel="preconnect" href="https://i.scdn.co" />
     <link rel="preconnect" href="https://image-cdn-ak.spotifycdn.com" />
-    <link rel="preconnect" href="https://storage.googleapis.com" />
+    <script>
+      if (!location.hash || location.hash === "#/home") {
+        window.__moodwaveHomeDataPromise = fetch("/api/home")
+          .then((response) => (response.ok ? response.json() : null))
+          .catch(() => null);
+      }
+    </script>
 
     <link rel="stylesheet" href="src/assets/css/setting/fonts.css" />
     <link rel="stylesheet" href="src/assets/css/setting/vars.css" />

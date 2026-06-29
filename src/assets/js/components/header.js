@@ -3,9 +3,6 @@ import { API_ENDPOINTS } from "../api/api.js";
 import { clearAuthCache, getCurrentUser } from "../utils/auth.js";
 import { escapeHTML } from "../utils/escapeHTML.js";
 
-const SPOTIFY_LOGO_URL =
-  "https://storage.googleapis.com/pr-newsroom-wp/1/2018/11/Spotify_Logo_RGB_Black.png";
-
 // =========================
 // 헤더 뒤로 / 앞으로 아이콘 경로
 // =========================
@@ -123,13 +120,14 @@ function renderSpotifyConnectButton() {
   if (!headerAuth) return;
 
   headerAuth.innerHTML = `
-    <button id="spotifyConnectBtn" class="spotify-connect-btn" type="button">
-      <img
-        class="spotify-connect-btn__logo"
-        src="${SPOTIFY_LOGO_URL}"
-        alt="Spotify"
-      />
-      <strong>연동</strong>
+    <button
+      id="spotifyConnectBtn"
+      class="spotify-connect-btn"
+      type="button"
+      aria-label="Spotify 연동"
+    >
+      <span class="spotify-connect-btn__mark" aria-hidden="true">S</span>
+      <strong>Spotify 연동</strong>
     </button>
   `;
 
@@ -140,12 +138,8 @@ function renderSpotifyConnectButton() {
     spotifyConnectBtn.disabled = true;
 
     spotifyConnectBtn.innerHTML = `
-      <img
-        class="spotify-connect-btn__logo"
-        src="${SPOTIFY_LOGO_URL}"
-        alt="Spotify"
-      />
-      <strong>연동 중...</strong>
+      <span class="spotify-connect-btn__mark" aria-hidden="true">S</span>
+      <strong>Spotify 연동 중...</strong>
     `;
 
     window.location.href = getSpotifyLoginUrl();
